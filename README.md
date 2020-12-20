@@ -39,8 +39,6 @@ Il file è costituito da 4 differenti tipi record. La particella è identificata
 
 - TIPO RECORD 4: porzioni della particella.
 
-** Step per l'importazione del file .TER
-
 #### 1) Creazione della tabella contenente tutti i campi (Per non crare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi);<br>
 
 ```sql
@@ -240,7 +238,50 @@ VALUES
 ('4', 'acque esenti da estimo'),
 ('5', 'strade pubbliche'),
 ('0', 'particelle soppresse')
-```	
+```
+
+## Creazione delle relazioni tra i tipi di file: soggetti persone fisicihe (sogp) e titolarità (tit).
+Ogni immobile (particella o fabbircato) può appartnere a più titolari. Per gestire questa relazione (uno a molti) è possibile utilizzare le funzioni di aggregazione. In questo specifico caso è la scelta è ricaduta sulla creazione di un json che contiene i diversi titolari appartenenti ad un dato immobile. Il vantaggio di utilizzare il json è che questo è interrogabile. La creazione della relazione viene fatta in due step.
+
+1) Creazione della vista. La relazione del tipo uno a molti viene esplicitata tramite il join. Il risultato duplicherà le righe relative all'immobile che appartiene a più soggetti.
+
+```sql
+CREATE OR REPLACE VIEW  immobile_soggetto_pfisica AS SELECT
+	tit.identificativo_immobile,
+	tit.tipo_immobile,
+	tit.identificativo_soggetto,
+	tit.tipo_soggetto,
+	sogp.cognome,
+	sogp.nome,
+	sogp.codice_fiscale,
+	sogp.data_nascita
+	FROM tit tit
+	JOIN sogp ON tit.identificativo_soggetto = sogp.identificativo_soggetto
+```
+
+2) Creazione della vista aggregata. Viene creata la colonna soggetto che contiene in un'unica riga tutti i titolari dell'immobile.
+
+```sql
+CREATE OR REPLACE VIEW immobile_soggetto_pfisica_json AS SELECT
+	identificativo_immobile,
+	tipo_immobile,
+	json_agg 
+	(
+		json_build_object
+			(
+				'identificativo_soggetto', identificativo_soggetto,
+            			'cognome', cognome, 
+            			'nome', nome,
+				'codice_fiscale', codice_fiscale,
+				'data_nascita', data_nascita,
+				'tipo_soggetto', tipo_soggetto
+			)
+	) as soggetto
+FROM immobile_soggetto_pfisica
+GROUP by identificativo_immobile, tipo_immobile, tipo_soggetto
+```
 
 
+## Creazione delle relazioni tra le geometrie catastali e i dati censuari (in costruzione).
+Per il collegamento tra i dati censuari
 
