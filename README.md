@@ -26,6 +26,7 @@ Ogni tipo di file è costituito da una tabella che può contenere diversi tipi d
 
 - .TIT contiene sia la chiave identificativo immobile che la chiave identificativo soggetto;
 
+## Importazione dei singoli file in PostgreSQL/PostGIS - .FAB (in costruzione)
 
 ## Importazione dei singoli file in PostgreSQL/PostGIS - .TER
 Il file è costituito da 4 differenti tipi record. La particella è identificata attraverso il campo IDENTIFICATIVO IMMOBILE. La presenza di diversi tipi di record può creare delle righe duplicate per ogni particella.
@@ -87,11 +88,9 @@ CREATE TABLE public.ter(
 )
 ```
 
-#### 2) Importazione dei dati. Convertire il file .TER in .CSV utilizzando (si può utilizzare excel, calc, ecc.). Utilizzare la funzione di PgAdmin per l'importazione dei CSV.
+#### 2) Importazione dei dati. Convertire il file .TER in .CSV utilizzando (si può utilizzare excel, calc, ecc.). Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link.
 
-
-![](img/import.JPG)
-
+https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
 #### 3) Selezione del TIPO RECORD 1
 
@@ -133,7 +132,9 @@ CREATE TABLE public.sogP
 )
 ```
 
-#### 2) Importazione dei dati. Convertire il file .SOG in .csv utilizzando (si può utilizzare excel, calc, ecc.). Utilizzare la funzione di PgAdmin per l'importazione dei CSV.
+#### 2) Importazione dei dati. Convertire il file .SOG in .csv utilizzando (si può utilizzare excel, calc, ecc.). Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link.
+
+https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
 #### 3) Creazione della tabella per i soggetti giuridici sogG, contenente tutti i campi (Per non crare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi);
 
@@ -191,8 +192,9 @@ CREATE TABLE public.tit
 )
 ```
 
-#### 2) Importazione dei dati. Convertire il file .TIT in .csv utilizzando (si può utilizzare excel, calc, ecc.). Utilizzare la funzione di PgAdmin per l'importazione dei CSV.
+#### 2) Importazione dei dati. Convertire il file .TIT in .csv utilizzando (si può utilizzare excel, calc, ecc.). UUtilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link.
 
+https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
 ## Creazione delle tabella aggiuntive per la codifica dei codici
 Può risultare utile creare alcune tabelle per la codifica dei codici contenuti all'interno del record descrizione particelle.
