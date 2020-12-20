@@ -66,10 +66,12 @@ CREATE TABLE public.ter
 	identificativo_mutazione_finale TEXT
 )
 </code><br>
-____
-2) Selezione del TIPO RECORD 1<br>
+2) Importazione dei dati. Convertire il file .TER in .csv utilizzando (si può utilizzare excel, calc, ecc.). Utilizzare la funzione di PgAdmin 
+
+
+3) Selezione del TIPO RECORD 1<br>
 <code>
 CREATE TABLE public.ter_1
 SELECT * FROM ter
 WHERE tipo_record = '1'
-</code>
+</code><br>
