@@ -67,7 +67,7 @@ CREATE TABLE public.ter
 )
 </code><br>
 2) Importazione dei dati. Convertire il file .TER in .csv utilizzando (si può utilizzare excel, calc, ecc.). Utilizzare la funzione di PgAdmin <br>
-![](img/import.jpeg)
+![](img/import.JPG)
 
 
 3) Selezione del TIPO RECORD 1<br>
