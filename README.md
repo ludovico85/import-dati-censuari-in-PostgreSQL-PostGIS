@@ -155,7 +155,7 @@ CREATE TABLE public.sogG
 ## Importazione dei singoli file in PostgreSQL/PostGIS - .TIT
 Il file contiene un unico tipo di record.
 
-##### 1) Creazione della tabella titolarità contenente tutti i campi (Per non crare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi);
+#### 1) Creazione della tabella titolarità contenente tutti i campi (Per non crare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi);
 
 ```sql
 CREATE TABLE public.tit
