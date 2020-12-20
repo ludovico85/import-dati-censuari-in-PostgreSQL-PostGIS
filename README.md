@@ -20,7 +20,7 @@ Il file è costituito da 4 differenti tipi record. La particella è identificata
 - TIPO RECORD 3: riserva della particella;<br>
 - TIPO RECORD 4: porzioni della particella.<br>
 <b>Step per l'importazione del file .TER</b><br>
-1) Creazione della tabella contenente tutti i campi (Per non crare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi);
+1) Creazione della tabella contenente tutti i campi (Per non crare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi);<br>
 <code>
 CREATE TABLE public.ter
 (
@@ -65,4 +65,11 @@ CREATE TABLE public.ter
 	identificativo_mutazione_iniziale TEXT,
 	identificativo_mutazione_finale TEXT
 )
+</code><br>
+____
+2) Selezione del TIPO RECORD 1<br>
+<code>
+CREATE TABLE public.ter_1
+SELECT * FROM ter
+WHERE tipo_record = '1'
 </code>
