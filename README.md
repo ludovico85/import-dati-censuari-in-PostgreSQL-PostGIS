@@ -246,7 +246,8 @@ Ogni immobile (particella o fabbircato) può appartnere a più titolari. Per ges
 1) Creazione della vista. La relazione del tipo uno a molti viene esplicitata tramite il join. Il risultato duplicherà le righe relative all'immobile che appartiene a più soggetti.
 
 ```sql
-CREATE OR REPLACE VIEW  immobile_soggetto_pfisica AS SELECT
+CREATE OR REPLACE VIEW  tit_sogp AS SELECT
+	row_number() OVER ()::integer AS gid,
 	tit.identificativo_immobile,
 	tit.tipo_immobile,
 	tit.identificativo_soggetto,
@@ -262,7 +263,8 @@ CREATE OR REPLACE VIEW  immobile_soggetto_pfisica AS SELECT
 2) Creazione della vista aggregata. Viene creata la colonna soggetto che contiene in un'unica riga tutti i titolari dell'immobile.
 
 ```sql
-CREATE OR REPLACE VIEW immobile_soggetto_pfisica_json AS SELECT
+CREATE OR REPLACE VIEW tit_sogp_json AS SELECT
+	row_number() OVER ()::integer AS gid,
 	identificativo_immobile,
 	tipo_immobile,
 	json_agg 
