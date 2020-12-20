@@ -1,6 +1,6 @@
 # Import-dati-censuari-in-PostgreSQL/PostGIS
 
-##Breve descrizione dei dati catastali censuari
+## Breve descrizione dei dati catastali censuari
 Le informazioni descritte in questa sezione derivano dal documento a cura dell'Agenzia dell'Entrate (DOC. ES-23-IS-05) liberamente consultabile all'indirizzo https://wwwt.agenziaentrate.gov.it/mt/ServiziComuniIstituzioni/ES-23-IS-05_100909.pdf.
 
 
@@ -9,13 +9,13 @@ Per maggiori dettagli si può consultare https://www.agenziaentrate.gov.it/porta
 
 I dati censuari sono costituiti da 4 tipi di file:
 
--file fabbricati (.FAB);
+- file fabbricati (.FAB);
 
--file terreni (.TER);
+- file terreni (.TER);
 
--file soggetti (.SOG);
+- file soggetti (.SOG);
 
--file titolarità (.TIT).
+- file titolarità (.TIT).
 
 
 Ogni tipo di file è costituito da una tabella che può contenere diversi tipi di record. Il collegamento tra i tipi di file è assicurato dalla presenta di chiavi specifiche:
@@ -27,20 +27,20 @@ Ogni tipo di file è costituito da una tabella che può contenere diversi tipi d
 -.TIT contiene sia la chiave identificativo immobile che la chiave identificativo soggetto;
 
 
-##Importazione dei singoli file in PostgreSQL/PostGIS - .TER
+## Importazione dei singoli file in PostgreSQL/PostGIS - .TER
 Il file è costituito da 4 differenti tipi record. La particella è identificata attraverso il campo IDENTIFICATIVO IMMOBILE. La presenza di diversi tipi di record può creare delle righe duplicate per ogni particella.
 
--TIPO RECORD 1: contiene le caratteristiche della particella. E' il record di interesse che verrà utilizzato per ricostruire il dato spaziale;
+- TIPO RECORD 1: contiene le caratteristiche della particella. E' il record di interesse che verrà utilizzato per ricostruire il dato spaziale;
 
--TIPO RECORD 2: deduzioni della particella;
+- TIPO RECORD 2: deduzioni della particella;
 
--TIPO RECORD 3: riserva della particella;
+- TIPO RECORD 3: riserva della particella;
 
--TIPO RECORD 4: porzioni della particella.
+- TIPO RECORD 4: porzioni della particella.
 
-**Step per l'importazione del file .TER
+** Step per l'importazione del file .TER
 
-1) Creazione della tabella contenente tutti i campi (Per non crare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi);<br>
+### 1) Creazione della tabella contenente tutti i campi (Per non crare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi);<br>
 
 ```sql
 CREATE TABLE public.ter(
@@ -87,13 +87,13 @@ CREATE TABLE public.ter(
 )
 ```
 
-2) Importazione dei dati. Convertire il file .TER in .csv utilizzando (si può utilizzare excel, calc, ecc.). Utilizzare la funzione di PgAdmin
+### 2) Importazione dei dati. Convertire il file .TER in .csv utilizzando (si può utilizzare excel, calc, ecc.). Utilizzare la funzione di PgAdmin
 
 
 ![](img/import.JPG)
 
 
-3) Selezione del TIPO RECORD 1
+### 3) Selezione del TIPO RECORD 1
 
 
 ```sql
