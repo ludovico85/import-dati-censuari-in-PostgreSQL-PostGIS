@@ -207,7 +207,7 @@ CREATE TABLE public.qualita
 )
 ```
 
-Per inserire i valori utilizzare la funzione di PgAdmin per l'importazione dei CSV e utilizzare il file qualita.csv nel repo [a relative link](csv/qualita.csv)
+Per inserire i valori utilizzare la funzione di PgAdmin per l'importazione dei CSV e utilizzare il file [qualita.csv](csv/qualita.csv)
 
 #### Tabella delle partite speciali
 ```sql
