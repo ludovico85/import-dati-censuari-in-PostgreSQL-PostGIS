@@ -18,14 +18,18 @@ Ogni tipo di file è costituito da una tabella che può contenere diversi tipi d
 *.FAB/.TER contengono la chiave identificativo immobile;
 *.SOG contiene la chiave identificativo soggetto;
 *.TIT contiene sia la chiave identificativo immobile che la chiave identificativo soggetto;
-<h4> Importazione dei singoli file in PostgreSQL/PostGIS</h5>
-<h5>.TER</h5>
-Il file è costituito da 4 differenti tipi record. La particella è identificata attraverso il campo IDENTIFICATIVO IMMOBILE. La presenza di diversi tipi di record può creare delle righe duplicate per ogni particella.<br>
-- TIPO RECORD 1: contiene le caratteristiche della particella. E' il record di interesse che verrà utilizzato per ricostruire il dato spaziale;<br>
-- TIPO RECORD 2: deduzioni della particella;<br>
-- TIPO RECORD 3: riserva della particella;<br>
-- TIPO RECORD 4: porzioni della particella.<br>
-<b>Step per l'importazione del file .TER</b><br>
+
+
+<h4> Importazione dei singoli file in PostgreSQL/PostGIS - .TER</h4>
+Il file è costituito da 4 differenti tipi record. La particella è identificata attraverso il campo IDENTIFICATIVO IMMOBILE. La presenza di diversi tipi di record può creare delle righe duplicate per ogni particella.
+
+*TIPO RECORD 1: contiene le caratteristiche della particella. E' il record di interesse che verrà utilizzato per ricostruire il dato spaziale;
+*TIPO RECORD 2: deduzioni della particella;
+*TIPO RECORD 3: riserva della particella;
+*TIPO RECORD 4: porzioni della particella.
+
+<b>Step per l'importazione del file .TER</b>
+
 1) Creazione della tabella contenente tutti i campi (Per non crare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi);<br>
 
 ```sql
