@@ -279,30 +279,33 @@ CREATE TABLE public.codici_diritto
 ```
 Per inserire i valori utilizzare la funzione di PgAdmin per l'importazione dei CSV e utilizzare il file [diritto.csv](csv/diritto.csv)
 
-## Creazione delle relazioni tra i tipi di file: soggetti persone fisicihe (sogP) e titolarità (tit).
+## Creazione delle relazioni tra i tipi di file: soggetti persone fisicihe (sogp) e titolarità (tit).
 Ogni immobile (particella o fabbricato) può appartenere a più titolari. Per gestire questa relazione (uno a molti) è possibile utilizzare le funzioni di aggregazione. In questo specifico caso è la scelta è ricaduta sulla creazione di un json che contiene i diversi titolari appartenenti ad un dato immobile. Il vantaggio di utilizzare il json è che questo è interrogabile. La creazione della relazione viene fatta in due step.
 
 1) Creazione della vista. La relazione del tipo uno a molti viene esplicitata tramite il join. Il risultato duplicherà le righe relative all'immobile che appartiene a più soggetti.
 
 ```sql
-CREATE OR REPLACE VIEW  tit_sogP AS SELECT
+CREATE OR REPLACE VIEW  tit_sogp AS SELECT
 	row_number() OVER ()::integer AS gid,
 	tit.identificativo_immobile,
 	tit.tipo_immobile,
 	tit.identificativo_soggetto,
 	tit.tipo_soggetto,
+	dir.descrizione as diritto,
+	concat(tit.quota_numeratore_possesso, '/', tit.quota_denominatore_possesso) AS quota,
 	sogp.cognome,
 	sogp.nome,
 	sogp.codice_fiscale,
 	sogp.data_nascita
 	FROM tit tit
 	JOIN sogP ON tit.identificativo_soggetto = sogp.identificativo_soggetto
+	JOIN codici_diritto dir ON tit.codice_diritto = dir.codice_diritto
 ```
 
 2) Creazione della vista aggregata. Viene creata la colonna soggetto che contiene in un'unica riga tutti i titolari dell'immobile.
 
 ```sql
-CREATE OR REPLACE VIEW tit_sogP_json AS SELECT
+CREATE OR REPLACE VIEW tit_sogp_json AS SELECT
 	row_number() OVER ()::integer AS gid,
 	identificativo_immobile,
 	tipo_immobile,
@@ -311,14 +314,16 @@ CREATE OR REPLACE VIEW tit_sogP_json AS SELECT
 		json_build_object
 			(
 				'identificativo_soggetto', identificativo_soggetto,
-            			'cognome', cognome,
-            			'nome', nome,
+            	'cognome', cognome,
+            	'nome', nome,
 				'codice_fiscale', codice_fiscale,
 				'data_nascita', data_nascita,
-				'tipo_soggetto', tipo_soggetto
+				'tipo_soggetto', tipo_soggetto,
+				'quota', quota,
+				'diritto', diritto
 			)
 	) as soggetto
-FROM tit_sogP
+FROM tit_sogp
 GROUP by identificativo_immobile, tipo_immobile, tipo_soggetto
 ```
 
