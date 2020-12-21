@@ -1,4 +1,5 @@
 # Import-dati-censuari-in-PostgreSQL/PostGIS
+Il repository contiene i passaggi per l'importazione dei dati catastali censuari in un database PostgreSQL/PostGIS e per il collegamento dei dati stessi alle geometrie catastali importate utilizzando il plugin per QGIS CXF_in https://github.com/saccon/CXF_in. Nella costruzione del database non sono state inserite esplicitamente delle relazioni tramite chiavi primarie/esterne a causa della non univocità dei valori presenti in alcuni tipi di file. Tuttavia le relazioni sono assicurate attarverso delle operazioni di join.
 
 ## Breve descrizione dei dati catastali censuari.
 Le informazioni descritte in questa sezione derivano dal documento a cura dell'Agenzia dell'Entrate (DOC. ES-23-IS-05) liberamente consultabile all'indirizzo: https://wwwt.agenziaentrate.gov.it/mt/ServiziComuniIstituzioni/ES-23-IS-05_100909.pdf.
