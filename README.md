@@ -327,6 +327,30 @@ FROM tit_sogp
 GROUP by identificativo_immobile, tipo_immobile, tipo_soggetto
 ```
 
+## Creazione delle relazioni tra i tipi di file: soggetti persone fisicihe_titolarità (tit_sogp_json) e immobili.
+La creazione della relazione viene fatta in due step.
+
+```sql
+create or replace view tabella_join_soggetti_fisici AS
+SELECT row_number() OVER ()::integer AS gid,
+t.identificativo_immobile as identificativo_immobile_ter,
+t.foglio,
+t.numero,
+t.denominatore,
+t.descrizione_qualita,
+t.descrizione_partita,
+t.classe,
+t.ettari,
+t.are,
+t.centiare,
+t.fg_plla,
+j.identificativo_immobile as identificativo_immobile_tit,
+j.tipo_soggetto,
+j.soggetto
+FROM ter_fg_plla t
+LEFT JOIN immobile_soggetto_pfisica_json j ON t.identificativo_immobile = j.identificativo_immobile
+```
+
 ## Creazione delle relazioni tra i tipi di file: soggetti persone giuridiche (sogG) e titolarità (tit) (in costruzione).
 
 ## Creazione delle relazioni tra le geometrie catastali e i dati censuari (in costruzione).
