@@ -355,23 +355,23 @@ ter.foglio,
 ter.numero,
 	CASE -- nuova colonna che permette di assegnare un codice univoco per foglio e particella. Servirà per il join con le geometrie del catasto
 	WHEN length(ter.foglio) = 1 THEN concat(ter.codice_amministrativo, '_000', ter.foglio, '_', ter.numero)
-    ELSE
+    	ELSE
 		(
 			CASE
 		 	WHEN length(ter.foglio) = 2 THEN concat(ter.codice_amministrativo, '_00', ter.foglio, '_', ter.numero)
 		 	ELSE
-		 	(
-				CASE
-			 	WHEN length(ter.foglio) = 3 THEN concat(ter.codice_amministrativo, '_0', ter.foglio, '_', ter.numero)
-			 	ELSE
-			 	(
+				(
 					CASE
-					WHEN length(ter.foglio) = 4 THEN concat(ter.codice_amministrativo, '_', ter.foglio, '_', ter.numero)
-                	END
+			 		WHEN length(ter.foglio) = 3 THEN concat(ter.codice_amministrativo, '_0', ter.foglio, '_', ter.numero)
+			 		ELSE
+			 			(
+							CASE
+							WHEN length(ter.foglio) = 4 THEN concat(ter.codice_amministrativo, '_', ter.foglio, '_', ter.numero)
+                					END
+						)
+					END
 				)
 			END
-			)
-		END
 		)
 	END AS com_fg_plla,
 q.descrizione AS qualita,
