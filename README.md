@@ -421,7 +421,7 @@ SET com_fg_plla = CONCAT(codice_comune, '_',fg,'_', mappale);
 #### 3) Join delle informazioni delle particelle e della titolarità relative ai soggetti fisici
 
 ```sql
-CREATE OR REPLACE VIEW particellare_persone_fisiche AS
+CREATE OR REPLACE VIEW particellare_persone_fisiche AS -- Per questioni di performance sostituire con una Materialized View
 SELECT row_number() OVER ()::integer AS gid,
 	p.codice_comune AS codice_comune,
 	p.fg AS foglio,
