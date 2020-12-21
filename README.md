@@ -295,7 +295,7 @@ CREATE TABLE public.codici_diritto
 ```
 Per inserire i valori utilizzare la funzione di PgAdmin per l'importazione dei CSV e utilizzare il file [diritto.csv](csv/diritto.csv)
 
-## Creazione delle relazioni tra i tipi di file: soggetti persone fisicihe (sogp) e titolarità (tit).
+## Creazione delle relazioni tra i tipi di file: soggetti persone fisicihe (sogp) e titolarità persone fisiche (titp).
 Ogni immobile (particella o fabbricato) può appartenere a più titolari. Per gestire questa relazione (uno a molti) è possibile utilizzare le funzioni di aggregazione. In questo specifico caso è la scelta è ricaduta sulla creazione di un json che contiene i diversi titolari appartenenti ad un dato immobile. Il vantaggio di utilizzare il json è che questo è interrogabile. La creazione della relazione viene fatta in due step.
 
 1) Creazione della vista. La relazione del tipo uno a molti viene esplicitata tramite il join. Il risultato duplicherà le righe relative all'immobile che appartiene a più soggetti.
@@ -343,8 +343,7 @@ FROM titp_sogp
 GROUP by identificativo_immobile, tipo_immobile, tipo_soggetto
 ```
 
-## Creazione delle relazioni tra i tipi di file: soggetti persone fisicihe_titolarità (tit_sogp_json) e immobili (ter_1_clean).
-La creazione della relazione viene fatta in due step.
+## Creazione delle relazioni tra i tipi di file: soggetti_titolarità persone fisiche (tit_sogp_json) e immobili (ter_1_clean).
 
 ```sql
 SELECT row_number() OVER ()::integer AS gid,
@@ -363,6 +362,6 @@ JOIN titp_sogp_json j ON ter.identificativo_immobile = j.identificativo_immobile
 JOIN qualita q ON ter.qualita = q.id_qualita
 ```
 
-## Creazione delle relazioni tra i tipi di file: soggetti persone giuridiche (sogG) e titolarità (tit) (in costruzione).
+## Creazione delle relazioni tra i tipi di file: soggetti_titolarità persone giuridiche (tit_sogg_json) e immobili (ter_1_clean) (in costruzione).
 
 ## Creazione delle relazioni tra le geometrie catastali e i dati censuari (in costruzione).
