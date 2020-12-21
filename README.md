@@ -231,7 +231,7 @@ CREATE OR REPLACE VIEW titp AS
 #### 4) Creazione della vista titolarità per i soggetti giuridici.
 
 ```sql
-CREATE OR REPLACE VIEW titp AS
+CREATE OR REPLACE VIEW titg AS
 	SELECT * FROM tit
 	WHERE tipo_soggetto = 'G'
 ```
@@ -283,7 +283,7 @@ VALUES
 ('0', 'particelle soppresse')
 ```
 
-### Tabella dei codici dirrito.
+#### Tabella dei codici diritto.
 
 ```sql
 CREATE TABLE public.codici_diritto
@@ -330,8 +330,8 @@ CREATE OR REPLACE VIEW titp_sogp_json AS SELECT
 		json_build_object
 			(
 				'identificativo_soggetto', identificativo_soggetto,
-            	'cognome', cognome,
-            	'nome', nome,
+            			'cognome', cognome,
+            			'nome', nome,
 				'codice_fiscale', codice_fiscale,
 				'data_nascita', data_nascita,
 				'tipo_soggetto', tipo_soggetto,
@@ -343,36 +343,15 @@ FROM titp_sogp
 GROUP by identificativo_immobile, tipo_immobile, tipo_soggetto
 ```
 
-## Creazione delle relazioni tra i tipi di file: soggetti persone fisicihe_titolarità (tit_sogp_json) e immobili.
+## Creazione delle relazioni tra i tipi di file: soggetti persone fisicihe_titolarità (tit_sogp_json) e immobili (ter_1_clean).
 La creazione della relazione viene fatta in due step.
 
 ```sql
-create or replace view tabella_join_soggetti_fisici AS
-SELECT row_number() OVER ()::integer AS gid,
-t.identificativo_immobile as identificativo_immobile_ter,
-t.foglio,
-t.numero,
-t.denominatore,
-t.descrizione_qualita,
-t.descrizione_partita,
-t.classe,
-t.ettari,
-t.are,
-t.centiare,
-t.fg_plla,
-j.identificativo_immobile as identificativo_immobile_tit,
-j.tipo_soggetto,
-j.soggetto
-FROM ter_fg_plla t
-LEFT JOIN immobile_soggetto_pfisica_json j ON t.identificativo_immobile = j.identificativo_immobile
-```
-
 SELECT row_number() OVER ()::integer AS gid,
 ter.identificativo_immobile AS identificativo_immobile_ter,
 ter.foglio,
 ter.numero,
 q.descrizione AS qualita,
-ter.partita,
 ter.classe,
 ter.ettari,
 ter.are,
@@ -380,9 +359,9 @@ ter.centiare,
 j.identificativo_immobile as identificativo_immobile_tit,
 j.soggetto
 FROM ter_1_clean ter
-JOIN tit_sogp_json j ON ter.identificativo_immobile = j.identificativo_immobile
+JOIN titp_sogp_json j ON ter.identificativo_immobile = j.identificativo_immobile
 JOIN qualita q ON ter.qualita = q.id_qualita
-
+```
 
 ## Creazione delle relazioni tra i tipi di file: soggetti persone giuridiche (sogG) e titolarità (tit) (in costruzione).
 
