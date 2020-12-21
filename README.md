@@ -104,8 +104,8 @@ CREATE TABLE public.ter_1
 La tabella risultante dalla selezione del tipo_record = '1' può essere ulteriormente "pulita" eliminando quelle particelle che non hanno titolarietà come la particelle soprresse, acque, strade. Le informazioni possono essere ricavate dal campo partita:
 
 partita | descrizione
+:------ | :------
 1   | aree di enti urbani e promiscui
------- | ------
 2   | accessori comuni ad enti rurali e ad enti rurali e urbani
 3   | aree di fabbircati rurali, o urbani da accertare, divisi in subalterni
 4   | acque esenti da estimo
