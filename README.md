@@ -90,18 +90,16 @@ CREATE TABLE public.ter(
 
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
-#### 3) Selezione del TIPO RECORD 1.
-
+#### 3) Creazione della vista contenente solo il TIPO RECORD 1.
 
 ```sql
-CREATE TABLE public.ter_1
-(
+CREATE OR REPLACE VIEW public.ter_1 AS
   SELECT * FROM ter
   WHERE tipo_record = '1'
-)
 ```
-### Pulizia della tabella ter_1 (opzionale).
-La tabella risultante dalla selezione del tipo_record = '1' può essere ulteriormente "pulita" eliminando quelle particelle che non hanno titolarietà come la particelle soprresse, acque, strade. Le informazioni possono essere ricavate dal campo partita:
+
+### Pulizia della vista ter_1 (opzionale).
+La Vista risultante dalla selezione del tipo_record = '1' può essere ulteriormente "pulita" eliminando quelle particelle che non hanno titolarità come la particelle soppresse, acque, strade. Le informazioni possono essere ricavate dal campo partita:
 
 partita | descrizione
 :------ | :------
@@ -111,6 +109,12 @@ partita | descrizione
 4   | acque esenti da estimo
 5   | strade pubbliche
 0   | particelle soppresse
+
+```sql
+CREATE OR REPLACE VIEW public.ter_1_clean AS
+	SELECT * FROM ter_1
+	WHERE ter_1.partita IS DISTINCT FROM '0' AND ter_1.partita IS DISTINCT FROM '4' AND ter_1.partita IS DISTINCT FROM '5'
+```
 
 ## Importazione dei singoli file in PostgreSQL/PostGIS - .SOG.
 Il file è costituito da 2 differenti tipi record. Il soggetto è identificato attraverso il campo IDENTIFICATIVO SOGGETTO.
