@@ -105,20 +105,17 @@ La tabella risultante dalla selezione del tipo_record = '1' può essere ulterior
 
 partita | descrizione
 ------ | ------
-4   | acque esenti da estimo  
-
-
-
-partita | descrizione
-________|____________
-4
-________|____________
-('4', 'acque esenti da estimo'),
-('5', 'strade pubbliche'),
-('0', 'particelle soppresse')
-
-
-
+1   | aree di enti urbani e promiscui
+------ | ------
+2   | accessori comuni ad enti rurali e ad enti rurali e urbani
+------ | ------
+3   | aree di fabbircati rurali, o urbani da accertare, divisi in subalterni
+------ | ------
+4   | acque esenti da estimo
+------ | ------
+5   | strade pubbliche
+------ | ------
+0   | particelle soppresse
 
 ## Importazione dei singoli file in PostgreSQL/PostGIS - .SOG.
 Il file è costituito da 2 differenti tipi record. Il soggetto è identificato attraverso il campo IDENTIFICATIVO SOGGETTO.
