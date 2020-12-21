@@ -1,6 +1,6 @@
 # Import-dati-censuari-in-PostgreSQL/PostGIS
 
-## Breve descrizione dei dati catastali censuari
+## Breve descrizione dei dati catastali censuari.
 Le informazioni descritte in questa sezione derivano dal documento a cura dell'Agenzia dell'Entrate (DOC. ES-23-IS-05) liberamente consultabile all'indirizzo https://wwwt.agenziaentrate.gov.it/mt/ServiziComuniIstituzioni/ES-23-IS-05_100909.pdf.
 
 
@@ -26,9 +26,9 @@ Ogni tipo di file è costituito da una tabella che può contenere diversi tipi d
 
 - .TIT contiene sia la chiave identificativo immobile che la chiave identificativo soggetto (oltre che la chiave identificativo titolarietà);
 
-## Importazione dei singoli file in PostgreSQL/PostGIS - .FAB (in costruzione)
+## Importazione dei singoli file in PostgreSQL/PostGIS - .FAB (in costruzione).
 
-## Importazione dei singoli file in PostgreSQL/PostGIS - .TER
+## Importazione dei singoli file in PostgreSQL/PostGIS - .TER.
 Il file è costituito da 4 differenti tipi record. La particella è identificata attraverso il campo IDENTIFICATIVO IMMOBILE. La presenza di diversi tipi di record può creare delle righe duplicate per ogni particella.
 
 - TIPO RECORD 1: contiene le caratteristiche della particella. E' il record di interesse che verrà utilizzato per ricostruire il dato spaziale;
@@ -39,7 +39,7 @@ Il file è costituito da 4 differenti tipi record. La particella è identificata
 
 - TIPO RECORD 4: porzioni della particella.
 
-#### 1) Creazione della tabella contenente tutti i campi (Per non creare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi);<br>
+#### 1) Creazione della tabella contenente tutti i campi (Per non creare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi).
 
 ```sql
 CREATE TABLE public.ter(
@@ -90,7 +90,7 @@ CREATE TABLE public.ter(
 
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
-#### 3) Selezione del TIPO RECORD 1
+#### 3) Selezione del TIPO RECORD 1.
 
 
 ```sql
@@ -101,7 +101,7 @@ CREATE TABLE public.ter_1
 )
 ```
 
-## Importazione dei singoli file in PostgreSQL/PostGIS - .SOG
+## Importazione dei singoli file in PostgreSQL/PostGIS - .SOG.
 Il file è costituito da 2 differenti tipi record. Il soggetto è identificato attraverso il campo IDENTIFICATIVO SOGGETTO.
 
 - TIPO RECORD P: intestato a persona fisica;
@@ -154,10 +154,10 @@ CREATE TABLE public.sogG
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
 
-## Importazione dei singoli file in PostgreSQL/PostGIS - .TIT
+## Importazione dei singoli file in PostgreSQL/PostGIS - .TIT.
 Il file contiene un unico tipo di record.
 
-#### 1) Creazione della tabella titolarità contenente tutti i campi (Per non creare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi);
+#### 1) Creazione della tabella titolarità contenente tutti i campi (Per non creare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi).
 
 ```sql
 CREATE TABLE public.tit
@@ -198,10 +198,10 @@ CREATE TABLE public.tit
 
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
-## Creazione delle tabella aggiuntive per la codifica dei codici
+## Creazione delle tabella aggiuntive per la codifica dei codici.
 Può risultare utile creare alcune tabelle per la codifica dei codici contenuti all'interno del record descrizione particelle.
 
-#### Tabella delle qualità colturali
+#### Tabella delle qualità colturali.
 ```sql
 CREATE TABLE public.qualita
 (
@@ -213,7 +213,7 @@ CREATE TABLE public.qualita
 
 Per inserire i valori utilizzare la funzione di PgAdmin per l'importazione dei CSV e utilizzare il file [qualita.csv](csv/qualita.csv)
 
-#### Tabella delle partite speciali
+#### Tabella delle partite speciali.
 ```sql
 CREATE TABLE public.partite_speciali_fabbricati
 (
@@ -244,13 +244,13 @@ VALUES
 ('0', 'particelle soppresse')
 ```
 
-## Creazione delle relazioni tra i tipi di file: soggetti persone fisicihe (sogp) e titolarità (tit).
+## Creazione delle relazioni tra i tipi di file: soggetti persone fisicihe (sogP) e titolarità (tit).
 Ogni immobile (particella o fabbricato) può appartenere a più titolari. Per gestire questa relazione (uno a molti) è possibile utilizzare le funzioni di aggregazione. In questo specifico caso è la scelta è ricaduta sulla creazione di un json che contiene i diversi titolari appartenenti ad un dato immobile. Il vantaggio di utilizzare il json è che questo è interrogabile. La creazione della relazione viene fatta in due step.
 
 1) Creazione della vista. La relazione del tipo uno a molti viene esplicitata tramite il join. Il risultato duplicherà le righe relative all'immobile che appartiene a più soggetti.
 
 ```sql
-CREATE OR REPLACE VIEW  tit_sogp AS SELECT
+CREATE OR REPLACE VIEW  tit_sogP AS SELECT
 	row_number() OVER ()::integer AS gid,
 	tit.identificativo_immobile,
 	tit.tipo_immobile,
@@ -261,13 +261,13 @@ CREATE OR REPLACE VIEW  tit_sogp AS SELECT
 	sogp.codice_fiscale,
 	sogp.data_nascita
 	FROM tit tit
-	JOIN sogp ON tit.identificativo_soggetto = sogp.identificativo_soggetto
+	JOIN sogP ON tit.identificativo_soggetto = sogp.identificativo_soggetto
 ```
 
 2) Creazione della vista aggregata. Viene creata la colonna soggetto che contiene in un'unica riga tutti i titolari dell'immobile.
 
 ```sql
-CREATE OR REPLACE VIEW tit_sogp_json AS SELECT
+CREATE OR REPLACE VIEW tit_sogP_json AS SELECT
 	row_number() OVER ()::integer AS gid,
 	identificativo_immobile,
 	tipo_immobile,
@@ -283,10 +283,10 @@ CREATE OR REPLACE VIEW tit_sogp_json AS SELECT
 				'tipo_soggetto', tipo_soggetto
 			)
 	) as soggetto
-FROM immobile_soggetto_pfisica
+FROM tit_sogP
 GROUP by identificativo_immobile, tipo_immobile, tipo_soggetto
 ```
 
+## Creazione delle relazioni tra i tipi di file: soggetti persone giuridiche (sogG) e titolarità (tit) (in costruzione).
 
 ## Creazione delle relazioni tra le geometrie catastali e i dati censuari (in costruzione).
-Per il collegamento tra i dati censuari
