@@ -86,9 +86,10 @@ CREATE TABLE public.ter(
 )
 ```
 
-#### 2) Importazione dei dati. Convertire il file .TER in .CSV utilizzando (si può utilizzare excel, calc, ecc.). Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link.
-
+#### 2) Importazione dei dati.
+Convertire il file .TER in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link.
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
+Per evitare errori è preferibbile che i CSV abbiano l'header definito come da [esempio.csv](csv/TER.csv)
 
 #### 3) Creazione della vista contenente solo il TIPO RECORD 1.
 
@@ -145,7 +146,10 @@ CREATE TABLE public.sogP
 )
 ```
 
-#### 2) Importazione dei dati. Convertire il file .SOG in .csv utilizzando (si può utilizzare excel, calc, ecc.). Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link.
+#### 2) Importazione dei dati.
+Convertire il file .TER in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link.
+https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
+Per evitare errori è preferibbile che i CSV abbiano l'header definito come da [esempio.csv](csv/SOGP.csv)
 
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
@@ -164,10 +168,10 @@ CREATE TABLE public.sogG
 	codice_fiscale TEXT
 )
 ```
-#### 4) Importazione dei dati. Convertire il file .SOG in .csv utilizzando (si può utilizzare excel, calc, ecc.). Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link.
-
+#### 4) Importazione dei dati.
+Convertire il file .TER in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link.
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
-
+Per evitare errori è preferibbile che i CSV abbiano l'header definito come da [esempio.csv](csv/SOGG.csv)
 
 ## Importazione dei singoli file in PostgreSQL/PostGIS - .TIT.
 Il file contiene un unico tipo di record.
@@ -209,9 +213,10 @@ CREATE TABLE public.tit
 )
 ```
 
-#### 2) Importazione dei dati. Convertire il file .TIT in .csv utilizzando (si può utilizzare excel, calc, ecc.). Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link.
-
+#### 2) Importazione dei dati.
+Convertire il file .TER in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link.
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
+Per evitare errori è preferibbile che i CSV abbiano l'header definito come da [esempio.csv](csv/TIT.csv)
 
 ## Creazione delle tabella aggiuntive per la codifica dei codici.
 Può risultare utile creare alcune tabelle per la codifica dei codici contenuti all'interno del record descrizione particelle.
