@@ -347,16 +347,38 @@ GROUP by identificativo_immobile, tipo_immobile, tipo_soggetto
 ## Creazione delle relazioni tra i tipi di file: soggetti_titolarità persone fisiche (tit_sogp_json) e immobili (ter_1_clean).
 
 ```sql
+CREATE OR REPLACE VIEW tit_sog_ter_persone_fisiche AS
+CREATE OR REPLACE VIEW 
 SELECT row_number() OVER ()::integer AS gid,
-ter.identificativo_immobile AS identificativo_immobile_ter,
+ter.identificativo_immobile AS identificativo_immobile,
 ter.foglio,
 ter.numero,
+	CASE -- nuova colonna che permette di assegnare un codice univoco per foglio e particella. Servirà per il join con le geometrie del catasto
+	WHEN length(ter.foglio) = 1 THEN concat(ter.codice_amministrativo, '_000', ter.foglio, '_', ter.numero)
+    ELSE
+		(
+			CASE
+		 	WHEN length(ter.foglio) = 2 THEN concat(ter.codice_amministrativo, '_00', ter.foglio, '_', ter.numero)
+		 	ELSE
+		 	(
+				CASE
+			 	WHEN length(ter.foglio) = 3 THEN concat(ter.codice_amministrativo, '_0', ter.foglio, '_', ter.numero)
+			 	ELSE
+			 	(
+					CASE
+					WHEN length(ter.foglio) = 4 THEN concat(ter.codice_amministrativo, '_', ter.foglio, '_', ter.numero)
+                	END
+				)
+			END
+			)
+		END
+		)
+	END AS com_fg_plla,
 q.descrizione AS qualita,
 ter.classe,
 ter.ettari,
 ter.are,
 ter.centiare,
-j.identificativo_immobile as identificativo_immobile_tit,
 j.soggetto
 FROM ter_1_clean ter
 JOIN titp_sogp_json j ON ter.identificativo_immobile = j.identificativo_immobile
