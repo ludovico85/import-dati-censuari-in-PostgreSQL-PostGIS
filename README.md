@@ -220,6 +220,22 @@ https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
 Per evitare errori è preferibbile che i CSV abbiano l'header definito come da [esempio.csv](csv/TIT.csv)
 
+#### 3) Creazione della vista titolarità per i soggetti fisici.
+
+```sql
+CREATE OR REPLACE VIEW titp AS
+	SELECT * FROM tit
+	WHERE tipo_soggetto = 'P'
+```
+
+#### 4) Creazione della vista titolarità per i soggetti giuridici.
+
+```sql
+CREATE OR REPLACE VIEW titp AS
+	SELECT * FROM tit
+	WHERE tipo_soggetto = 'G'
+```
+
 ## Creazione delle tabella aggiuntive per la codifica dei codici.
 Può risultare utile creare alcune tabelle per la codifica dei codici contenuti all'interno del record descrizione particelle.
 
@@ -285,7 +301,7 @@ Ogni immobile (particella o fabbricato) può appartenere a più titolari. Per ge
 1) Creazione della vista. La relazione del tipo uno a molti viene esplicitata tramite il join. Il risultato duplicherà le righe relative all'immobile che appartiene a più soggetti.
 
 ```sql
-CREATE OR REPLACE VIEW  tit_sogp AS SELECT
+CREATE OR REPLACE VIEW  titp_sogp AS SELECT
 	row_number() OVER ()::integer AS gid,
 	tit.identificativo_immobile,
 	tit.tipo_immobile,
@@ -297,7 +313,7 @@ CREATE OR REPLACE VIEW  tit_sogp AS SELECT
 	sogp.nome,
 	sogp.codice_fiscale,
 	sogp.data_nascita
-	FROM tit tit
+	FROM titp tit
 	JOIN sogP ON tit.identificativo_soggetto = sogp.identificativo_soggetto
 	JOIN codici_diritto dir ON tit.codice_diritto = dir.codice_diritto
 ```
@@ -305,7 +321,7 @@ CREATE OR REPLACE VIEW  tit_sogp AS SELECT
 2) Creazione della vista aggregata. Viene creata la colonna soggetto che contiene in un'unica riga tutti i titolari dell'immobile.
 
 ```sql
-CREATE OR REPLACE VIEW tit_sogp_json AS SELECT
+CREATE OR REPLACE VIEW titp_sogp_json AS SELECT
 	row_number() OVER ()::integer AS gid,
 	identificativo_immobile,
 	tipo_immobile,
@@ -323,7 +339,7 @@ CREATE OR REPLACE VIEW tit_sogp_json AS SELECT
 				'diritto', diritto
 			)
 	) as soggetto
-FROM tit_sogp
+FROM titp_sogp
 GROUP by identificativo_immobile, tipo_immobile, tipo_soggetto
 ```
 
@@ -350,6 +366,23 @@ j.soggetto
 FROM ter_fg_plla t
 LEFT JOIN immobile_soggetto_pfisica_json j ON t.identificativo_immobile = j.identificativo_immobile
 ```
+
+SELECT row_number() OVER ()::integer AS gid,
+ter.identificativo_immobile AS identificativo_immobile_ter,
+ter.foglio,
+ter.numero,
+q.descrizione AS qualita,
+ter.partita,
+ter.classe,
+ter.ettari,
+ter.are,
+ter.centiare,
+j.identificativo_immobile as identificativo_immobile_tit,
+j.soggetto
+FROM ter_1_clean ter
+JOIN tit_sogp_json j ON ter.identificativo_immobile = j.identificativo_immobile
+JOIN qualita q ON ter.qualita = q.id_qualita
+
 
 ## Creazione delle relazioni tra i tipi di file: soggetti persone giuridiche (sogG) e titolarità (tit) (in costruzione).
 
