@@ -387,4 +387,60 @@ JOIN qualita q ON ter.qualita = q.id_qualita
 
 ## Creazione delle relazioni tra i tipi di file: soggetti_titolarità persone giuridiche (tit_sogg_json) e immobili (ter_1_clean) (in costruzione).
 
-## Creazione delle relazioni tra le geometrie catastali e i dati censuari (in costruzione).
+## Creazione delle relazioni tra le geometrie "Particelle" e i dati censuari.
+
+Il plugin CXF_in importa i dati nel databse PostgreSQL/PostGIS nello schema cxf_in. Come prima operazione bisogna copiare le tabelle bello schema public (in questo modo consente di avere anche una copia di backup dei dati importati).
+**Nota bene: può succedere che l'importazione nel DB attraverso il plugin CXF_in generi degli errori a causa di geometrie non valide, interrompendo il processo. In tal caso occorre importare dapprima le geometrie in QGIS, ripararle e importarle in PostgreSQL/PostGIS.**
+
+### Creazione delle relazioni tra le geometrie particellari e i dati censuari (persone fisiche)
+
+#### 1) Copia delle tabelle nello schema public
+
+```sql
+CREATE TABLE public.acque AS (SELECT * FROM cxf_in.acque);
+CREATE TABLE public.confine AS (SELECT * FROM cxf_in.confine);
+CREATE TABLE public.fabbricati AS (SELECT * FROM cxf_in.fabbricati);
+CREATE TABLE public.fiduciali AS (SELECT * FROM cxf_in.fiduciali);
+CREATE TABLE public.linee AS (SELECT * FROM cxf_in.linee);
+CREATE TABLE public.particelle AS (SELECT * FROM cxf_in.particelle);
+CREATE TABLE public.selezione AS (SELECT * FROM cxf_in.selezione);
+CREATE TABLE public.simboli AS (SELECT * FROM cxf_in.simboli);
+CREATE TABLE public.strade AS (SELECT * FROM cxf_in.strade);
+CREATE TABLE public.testi AS (SELECT * FROM cxf_in.testi);
+```
+#### 2) Creazione dell'identificativo univoco di particella da utilizzare nel join con la vista tit_sog_ter_persone_fisiche
+
+```sql
+ALTER TABLE public.Particelle
+ADD COLUMN com_fg_plla TEXT;
+
+UPDATE public.Particelle
+SET com_fg_plla = CONCAT(codice_comune, '_',fg,'_', mappale);
+```
+
+#### 3) Join delle informazioni delle particelle e della titolarità relative ai soggetti fisici
+
+```sql
+CREATE OR REPLACE VIEW particellare_persone_fisiche AS
+SELECT row_number() OVER ()::integer AS gid,
+	p.codice_comune AS codice_comune,
+	p.fg AS foglio,
+	p.mappale as particella,
+	CONCAT(p.codice_comune,'_', p.fg,'_', p.mappale) as fg_plla,
+	j.identificativo_immobile as identificativo_immobile,
+	j.qualita,
+	j.classe,
+	j.ettari,
+	j.are,
+	j.centiare,
+	j.soggetto,
+	p.geom as geom
+FROM
+	"Particelle" p
+	JOIN tit_sog_ter_persone_fisiche j ON p.com_fg_plla = j.com_fg_plla
+```
+
+### Creazione delle relazioni tra le geometrie particellari e i dati censuari (persone giuridiche) (in costruzione).
+
+
+## Creazione delle relazioni tra le geometrie "Fabbricati" e i dati censuari (in costruzione).
