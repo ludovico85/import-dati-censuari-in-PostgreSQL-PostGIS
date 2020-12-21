@@ -100,6 +100,25 @@ CREATE TABLE public.ter_1
   WHERE tipo_record = '1'
 )
 ```
+### Pulizia della tabella ter_1 (opzionale).
+La tabella risultante dalla selezione del tipo_record = '1' può essere ulteriormente "pulita" eliminando quelle particelle che non hanno titolarietà come la particelle soprresse, acque, strade. Le informazioni possono essere ricavate dal campo partita:
+
+partita | descrizione
+------ | ------
+4   | acque esenti da estimo  
+
+
+
+partita | descrizione
+________|____________
+4
+________|____________
+('4', 'acque esenti da estimo'),
+('5', 'strade pubbliche'),
+('0', 'particelle soppresse')
+
+
+
 
 ## Importazione dei singoli file in PostgreSQL/PostGIS - .SOG.
 Il file è costituito da 2 differenti tipi record. Il soggetto è identificato attraverso il campo IDENTIFICATIVO SOGGETTO.
