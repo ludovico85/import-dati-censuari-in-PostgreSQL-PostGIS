@@ -1,10 +1,9 @@
 # Import-dati-censuari-in-PostgreSQL/PostGIS
 
 ## Breve descrizione dei dati catastali censuari.
-Le informazioni descritte in questa sezione derivano dal documento a cura dell'Agenzia dell'Entrate (DOC. ES-23-IS-05) liberamente consultabile all'indirizzo https://wwwt.agenziaentrate.gov.it/mt/ServiziComuniIstituzioni/ES-23-IS-05_100909.pdf.
+Le informazioni descritte in questa sezione derivano dal documento a cura dell'Agenzia dell'Entrate (DOC. ES-23-IS-05) liberamente consultabile all'indirizzo: https://wwwt.agenziaentrate.gov.it/mt/ServiziComuniIstituzioni/ES-23-IS-05_100909.pdf.
 
-
-Per maggiori dettagli si può consultare https://www.agenziaentrate.gov.it/portale/web/guest/schede/fabbricatiterreni/portale-per-i-comuni/servizi-portale-dei-comuni/estrazione-dati-catastali.
+Per maggiori dettagli sui servizi riservati ai comuni di può consultare: https://www.agenziaentrate.gov.it/portale/web/guest/schede/fabbricatiterreni/portale-per-i-comuni/servizi-portale-dei-comuni/estrazione-dati-catastali.
 
 
 I dati censuari sono costituiti da 4 tipi di file:
@@ -16,7 +15,6 @@ I dati censuari sono costituiti da 4 tipi di file:
 - file soggetti (.SOG);
 
 - file titolarità (.TIT).
-
 
 Ogni tipo di file è costituito da una tabella che può contenere diversi tipi di record. Il collegamento tra i tipi di file è assicurato dalla presenta di chiavi specifiche:
 
@@ -87,8 +85,9 @@ CREATE TABLE public.ter(
 ```
 
 #### 2) Importazione dei dati.
-Convertire il file .TER in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link.
+Convertire il file .TER in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link:
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
+
 Per evitare errori è preferibbile che i CSV abbiano l'header definito come da [esempio.csv](csv/TER.csv)
 
 #### 3) Creazione della vista contenente solo il TIPO RECORD 1.
@@ -147,8 +146,9 @@ CREATE TABLE public.sogP
 ```
 
 #### 2) Importazione dei dati.
-Convertire il file .TER in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link.
+Convertire il file .TER in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link:
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
+
 Per evitare errori è preferibbile che i CSV abbiano l'header definito come da [esempio.csv](csv/SOGP.csv)
 
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
@@ -169,8 +169,9 @@ CREATE TABLE public.sogG
 )
 ```
 #### 4) Importazione dei dati.
-Convertire il file .TER in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link.
+Convertire il file .TER in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link:
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
+
 Per evitare errori è preferibbile che i CSV abbiano l'header definito come da [esempio.csv](csv/SOGG.csv)
 
 ## Importazione dei singoli file in PostgreSQL/PostGIS - .TIT.
@@ -214,8 +215,9 @@ CREATE TABLE public.tit
 ```
 
 #### 2) Importazione dei dati.
-Convertire il file .TER in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link.
+Convertire il file .TER in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link:
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
+
 Per evitare errori è preferibbile che i CSV abbiano l'header definito come da [esempio.csv](csv/TIT.csv)
 
 ## Creazione delle tabella aggiuntive per la codifica dei codici.
@@ -234,6 +236,7 @@ CREATE TABLE public.qualita
 Per inserire i valori utilizzare la funzione di PgAdmin per l'importazione dei CSV e utilizzare il file [qualita.csv](csv/qualita.csv)
 
 #### Tabella delle partite speciali.
+
 ```sql
 CREATE TABLE public.partite_speciali_fabbricati
 (
