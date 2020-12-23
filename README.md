@@ -445,9 +445,9 @@ FROM
 
 ## Creazione delle relazioni tra le geometrie "Fabbricati" e i dati censuari (in costruzione).
 
-## Esecuzione delle verifiche delle particelle
+## Verifica delle particelle
 
-Nel file titolairtà sono riportati i codici univoci degli immobili e dei titolari. Per conoscere quante particelle sono riportare nel file titolarità:
+Nel file titolarità sono riportati i codici univoci degli immobili e dei titolari. Per conoscere quante particelle sono riportare nel file titolarità:
 
 ```sql
 SELECT DISTINCT identificativo_immobile FROM tit WHERE tipo_immobile = 'T'
@@ -459,3 +459,8 @@ Per conoscere quante sono le particelle la cui titolerità riguarda soggetti fis
 SELECT DISTINCT identificativo_immobile FROM tit WHERE tipo_immobile = 'T' AND tipo_soggetto = 'P'
 ```
 
+Per conoscere quante sono le particelle la cui titolerità riguarda soggetti giuridici:
+
+```sql
+SELECT DISTINCT identificativo_immobile FROM tit WHERE tipo_immobile = 'T' AND tipo_soggetto = 'G'
+```
