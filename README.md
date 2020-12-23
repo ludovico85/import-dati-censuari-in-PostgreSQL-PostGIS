@@ -344,11 +344,55 @@ FROM titp_sogp
 GROUP by identificativo_immobile, tipo_immobile, tipo_soggetto
 ```
 
-## Creazione delle relazioni tra i tipi di file: soggetti_titolarità persone fisiche (tit_sogp_json) e immobili (ter_1_clean).
+## Creazione delle relazioni tra i tipi di file: soggetti giuridici (sogg) e titolarità soggetti giuridici (titg).
+Ogni immobile (particella o fabbricato) può appartenere a più titolari. Per gestire questa relazione (uno a molti) è possibile utilizzare le funzioni di aggregazione. In questo specifico caso è la scelta è ricaduta sulla creazione di un json che contiene i diversi titolari appartenenti ad un dato immobile. Il vantaggio di utilizzare il json è che questo è interrogabile. La creazione della relazione viene fatta in due step.
+
+1) Creazione della vista. La relazione del tipo uno a molti viene esplicitata tramite il join. Il risultato duplicherà le righe relative all'immobile che appartiene a più soggetti.
 
 ```sql
-CREATE OR REPLACE VIEW tit_sog_ter_persone_fisiche AS
-CREATE OR REPLACE VIEW 
+CREATE OR REPLACE VIEW  titg_sogg AS SELECT
+	row_number() OVER ()::integer AS gid,
+	tit.identificativo_immobile,
+	tit.tipo_immobile,
+	tit.identificativo_soggetto,
+	tit.tipo_soggetto,
+	dir.descrizione as diritto,
+	concat(tit.quota_numeratore_possesso, '/', tit.quota_denominatore_possesso) AS quota,
+	sogg.denominazione,
+	sogg.codice_amministrativo_sede,
+	sogg.codice_fiscale
+	FROM titg tit
+	JOIN sogg ON tit.identificativo_soggetto = sogg.identificativo_soggetto
+	JOIN codici_diritto dir ON tit.codice_diritto = dir.codice_diritto
+```
+
+2) Creazione della vista aggregata. Viene creata la colonna soggetto che contiene in un'unica riga tutti i titolari dell'immobile.
+
+```sql
+CREATE OR REPLACE VIEW titg_sogg_json AS SELECT
+	row_number() OVER ()::integer AS gid,
+	identificativo_immobile,
+	tipo_immobile,
+	json_agg
+	(
+		json_build_object
+			(
+				'denominazione', denominazione,
+            			'codice_amministrativo_sede', codice_amministrativo_sede,
+				'codice_fiscale', codice_fiscale,
+				'tipo_soggetto', tipo_soggetto,
+				'quota', quota,
+				'diritto', diritto
+			)
+	) as soggetto
+FROM titg_sogg
+GROUP by identificativo_immobile, tipo_immobile, tipo_soggetto
+```
+
+## Creazione delle relazioni tra i tipi di file: soggetti_titolarità persone fisiche (titp_sogp_json) e immobili (ter_1_clean).
+
+```sql
+CREATE OR REPLACE VIEW titp_sogp_ter_persone_fisiche AS
 SELECT row_number() OVER ()::integer AS gid,
 ter.identificativo_immobile AS identificativo_immobile,
 ter.foglio,
@@ -385,7 +429,46 @@ JOIN titp_sogp_json j ON ter.identificativo_immobile = j.identificativo_immobile
 JOIN qualita q ON ter.qualita = q.id_qualita
 ```
 
-## Creazione delle relazioni tra i tipi di file: soggetti_titolarità persone giuridiche (tit_sogg_json) e immobili (ter_1_clean) (in costruzione).
+## Creazione delle relazioni tra i tipi di file: soggetti_titolarità persone giuridiche (titg_sogg_json) e immobili (ter_1_clean).
+
+```sql
+CREATE OR REPLACE VIEW titg_sogg_ter_persone_giuridiche AS
+SELECT row_number() OVER ()::integer AS gid,
+ter.identificativo_immobile AS identificativo_immobile,
+ter.foglio,
+ter.numero,
+	CASE -- nuova colonna che permette di assegnare un codice univoco per foglio e particella. Servirà per il join con le geometrie del catasto
+	WHEN length(ter.foglio) = 1 THEN concat(ter.codice_amministrativo, '_000', ter.foglio, '_', ter.numero)
+    	ELSE
+		(
+			CASE
+		 	WHEN length(ter.foglio) = 2 THEN concat(ter.codice_amministrativo, '_00', ter.foglio, '_', ter.numero)
+		 	ELSE
+				(
+					CASE
+			 		WHEN length(ter.foglio) = 3 THEN concat(ter.codice_amministrativo, '_0', ter.foglio, '_', ter.numero)
+			 		ELSE
+			 			(
+							CASE
+							WHEN length(ter.foglio) = 4 THEN concat(ter.codice_amministrativo, '_', ter.foglio, '_', ter.numero)
+                					END
+						)
+					END
+				)
+			END
+		)
+	END AS com_fg_plla,
+q.descrizione AS qualita,
+ter.classe,
+ter.ettari,
+ter.are,
+ter.centiare,
+j.soggetto
+FROM ter_1_clean ter
+JOIN titp_sogp_json j ON ter.identificativo_immobile = j.identificativo_immobile
+JOIN qualita q ON ter.qualita = q.id_qualita
+```
+
 
 ## Creazione delle relazioni tra le geometrie "Particelle" e i dati censuari.
 
