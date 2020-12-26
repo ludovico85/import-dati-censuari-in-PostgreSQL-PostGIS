@@ -525,10 +525,9 @@ FROM
 	JOIN titp_sogp_ter_persone_fisiche j ON p.com_fg_plla = j.com_fg_plla
 ```
 
-```sql
-
 In alternativa con una materialized view (Consigliato)
 
+```sql
 CREATE MATERIALIZED VIEW particellare_persone_fisiche_MV AS
 SELECT row_number() OVER ()::integer AS gid,
 	p.codice_comune AS codice_comune,
@@ -549,8 +548,52 @@ FROM
 WITH DATA
 ```
 
-### Creazione delle relazioni tra le geometrie particellari e i dati censuari (persone giuridiche) (in costruzione).
+### Creazione delle relazioni tra le geometrie particellari e i dati censuari (persone giuridiche).
 
+#### 1) Join delle informazioni delle particelle e della titolarità relative ai soggetti giuridici
+
+```sql
+CREATE OR REPLACE VIEW particellare_persone_giuridiche AS -- Per questioni di performance sostituire con una Materialized View
+SELECT row_number() OVER ()::integer AS gid,
+	p.codice_comune AS codice_comune,
+	p.fg AS foglio,
+	p.mappale as particella,
+	CONCAT(p.codice_comune,'_', p.fg,'_', p.mappale) as fg_plla,
+	j.identificativo_immobile as identificativo_immobile,
+	j.qualita,
+	j.classe,
+	j.ettari,
+	j.are,
+	j.centiare,
+	j.soggetto,
+	p.geom as geom
+FROM
+	"Particelle" p
+	JOIN titg_sogg_ter_persone_giuridiche j ON p.com_fg_plla = j.com_fg_plla
+```
+
+In alternativa con una materialized view (Consigliato)
+
+```sql
+CREATE MATERIALIZED VIEW particellare_persone_giuridiche_MV AS
+SELECT row_number() OVER ()::integer AS gid,
+	p.codice_comune AS codice_comune,
+	p.fg AS foglio,
+	p.mappale as particella,
+	CONCAT(p.codice_comune,'_', p.fg,'_', p.mappale) as fg_plla,
+	j.identificativo_immobile as identificativo_immobile,
+	j.qualita,
+	j.classe,
+	j.ettari,
+	j.are,
+	j.centiare,
+	j.soggetto,
+	p.geom as geom
+FROM
+	"Particelle" p
+	JOIN titg_sogg_ter_persone_giuridiche j ON p.com_fg_plla = j.com_fg_plla
+WITH DATA
+```
 
 ## Creazione delle relazioni tra le geometrie "Fabbricati" e i dati censuari (in costruzione).
 
