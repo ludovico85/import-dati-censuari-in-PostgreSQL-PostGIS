@@ -597,6 +597,7 @@ WITH DATA
 
 ## Creazione delle relazioni tra le geometrie "Fabbricati" e i dati censuari (in costruzione).
 
+
 ## Verifica delle particelle
 
 Nel file titolarità sono riportati i codici univoci degli immobili e dei titolari. Per conoscere quante particelle sono riportare nel file titolarità:
@@ -669,5 +670,21 @@ SELECT row_number() OVER ()::integer AS gid,
 FROM
 	"Particelle" p
 	JOIN particelle_partite_speciali_terreni j ON p.com_fg_plla = j.com_fg_plla
+WITH DATA
+```
+
+
+## Estrazione delle particelle appartenenti ad un determinato soggetto.
+Si vogliono estrarre, per esempio, le particelle di un dato comune. Bisogna interrogare il campo soggetto (che è un json array).
+
+```sql
+SELECT * FROM particellare_persone_giuridiche WHERE (soggetto::jsonb @> '[{"denominazione": "VALORE"}]'); -- sotituire a VALORE il valore desiderato (es. COMUNE DI XXXX)
+```
+
+Per creare il particellare con il solo soggetto.
+
+```sql
+CREATE MATERIALIZED VIEW particellare_SOGGETTO AS
+SELECT * FROM particellare_persone_giuridiche WHERE (soggetto::jsonb @> '[{"denominazione": "VALORE"}]') -- sotituire a VALORE il valore desiderato (es. COMUNE DI XXXX)
 WITH DATA
 ```
