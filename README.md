@@ -616,3 +616,58 @@ Per conoscere quante sono le particelle la cui titolerità riguarda soggetti giu
 ```sql
 SELECT DISTINCT identificativo_immobile FROM tit WHERE tipo_immobile = 'T' AND tipo_soggetto = 'G'
 ```
+
+La somma del numero delle particelle soggetti fisici e del numero delle particelle soggetti giuridici non è sempre uguale al numero totale degli immobili poiché alcune particelle potrebbero essere in comune tra i due gruppi.
+
+
+#### Particelle senza titolarità
+La tabella partite_speciali_terreni contiene le particelle che non hanno titolarità. Può tornare utile creare un layer geometrico distinto per tale categoria di particelle.
+
+1) Selezione e creazione della vista con la partite speciali terreni.
+
+```sql
+CREATE OR REPLACE VIEW particelle_partite_speciali_terreni AS
+SELECT ter_1.*,
+	CASE -- nuova colonna che permette di assegnare un codice univoco per foglio e particella. Servirà per il join con le geometrie del catasto
+	WHEN length(ter_1.foglio) = 1 THEN concat(ter_1.codice_amministrativo, '_000', ter_1.foglio, '_', ter_1.numero)
+    	ELSE
+		(
+			CASE
+		 	WHEN length(ter_1.foglio) = 2 THEN concat(ter_1.codice_amministrativo, '_00', ter_1.foglio, '_', ter_1.numero)
+		 	ELSE
+				(
+					CASE
+			 		WHEN length(ter_1.foglio) = 3 THEN concat(ter_1.codice_amministrativo, '_0', ter_1.foglio, '_', ter_1.numero)
+			 		ELSE
+			 			(
+							CASE
+							WHEN length(ter_1.foglio) = 4 THEN concat(ter_1.codice_amministrativo, '_', ter_1.foglio, '_', ter_1.numero)
+                					END
+						)
+					END
+				)
+			END
+		)
+	END AS com_fg_plla,
+p.descrizione as descrizione_partita
+FROM ter_1
+JOIN partite_speciali_terreni p ON ter_1.partita = p.codice_partita
+WHERE ter_1.partita IN ('1', '2', '3', '4', '5', '0')
+```
+
+2) Creazione delle geometrie
+
+```sql
+CREATE MATERIALIZED VIEW particellare_partite_speciali AS
+SELECT row_number() OVER ()::integer AS gid,
+	p.codice_comune AS codice_comune,
+	p.fg AS fg,
+	p.mappale as plla,
+	CONCAT(p.codice_comune,'_', p.fg,'_', p.mappale) as fg_plla,
+	j.*,
+	p.geom as geom
+FROM
+	"Particelle" p
+	JOIN particelle_partite_speciali_terreni j ON p.com_fg_plla = j.com_fg_plla
+WITH DATA
+```
