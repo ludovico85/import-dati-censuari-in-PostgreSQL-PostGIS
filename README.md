@@ -99,8 +99,8 @@ CREATE OR REPLACE VIEW public.ter_1 AS
   WHERE tipo_record = '1'
 ```
 
-### Pulizia della vista ter_1 (opzionale).
-La Vista risultante dalla selezione del tipo_record = '1' può essere ulteriormente "pulita" eliminando quelle particelle che non hanno titolarità come la particelle soppresse, acque, strade. Le informazioni possono essere ricavate dal campo partita:
+### Pulizia della vista ter_1.
+La Vista risultante dalla selezione del tipo_record = '1' può essere ulteriormente "pulita" eliminando quelle particelle che non hanno titolarità come le particelle soppresse, acque, strade. Le informazioni possono essere ricavate dal campo partita:
 
 partita | descrizione
 :------ | :------
@@ -111,10 +111,12 @@ partita | descrizione
 5   | strade pubbliche
 0   | particelle soppresse
 
+Altre particelle che possono essere "pulite" sono quelle che contengono i subalterni.
+
 ```sql
 CREATE OR REPLACE VIEW public.ter_1_clean AS
 	SELECT * FROM ter_1
-	WHERE ter_1.partita IS DISTINCT FROM '0' AND ter_1.partita IS DISTINCT FROM '4' AND ter_1.partita IS DISTINCT FROM '5'
+	WHERE ter_1.partita IS DISTINCT FROM '0' AND ter_1.partita IS DISTINCT FROM '4' AND ter_1.partita IS DISTINCT FROM '5' AND subalterno IS NULL
 ```
 
 ## Importazione dei singoli file in PostgreSQL/PostGIS - .SOG.
