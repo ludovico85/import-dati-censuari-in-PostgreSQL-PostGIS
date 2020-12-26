@@ -345,7 +345,7 @@ Per inserire i valori utilizzare la funzione di PgAdmin per l'importazione dei C
 ## Creazione delle relazioni tra i tipi di file: soggetti persone fisicihe (sogp) e titolarità persone fisiche (titp).
 Ogni immobile (particella o fabbricato) può appartenere a più titolari. Per gestire questa relazione (uno a molti) è possibile utilizzare le funzioni di aggregazione. In questo specifico caso è la scelta è ricaduta sulla creazione di un json che contiene i diversi titolari appartenenti ad un dato immobile. Il vantaggio di utilizzare il json è che questo è interrogabile. La creazione della relazione viene fatta in due step.
 
-1) Creazione della vista. La relazione del tipo uno a molti viene esplicitata tramite il join. Il risultato duplicherà le righe relative all'immobile che appartiene a più soggetti.
+#### 1) Creazione della vista. La relazione del tipo uno a molti viene esplicitata tramite il join. Il risultato duplicherà le righe relative all'immobile che appartiene a più soggetti.
 
 ```sql
 CREATE OR REPLACE VIEW  titp_sogp AS SELECT
@@ -365,7 +365,7 @@ CREATE OR REPLACE VIEW  titp_sogp AS SELECT
 	JOIN codici_diritto dir ON tit.codice_diritto = dir.codice_diritto
 ```
 
-2) Creazione della vista aggregata. Viene creata la colonna soggetto che contiene in un'unica riga tutti i titolari dell'immobile.
+#### 2) Creazione della vista aggregata. Viene creata la colonna soggetto che contiene in un'unica riga tutti i titolari dell'immobile.
 
 ```sql
 CREATE OR REPLACE VIEW titp_sogp_json AS SELECT
@@ -393,7 +393,7 @@ GROUP by identificativo_immobile, tipo_immobile, tipo_soggetto
 ## Creazione delle relazioni tra i tipi di file: soggetti giuridici (sogg) e titolarità soggetti giuridici (titg).
 Ogni immobile (particella o fabbricato) può appartenere a più titolari. Per gestire questa relazione (uno a molti) è possibile utilizzare le funzioni di aggregazione. In questo specifico caso è la scelta è ricaduta sulla creazione di un json che contiene i diversi titolari appartenenti ad un dato immobile. Il vantaggio di utilizzare il json è che questo è interrogabile. La creazione della relazione viene fatta in due step.
 
-1) Creazione della vista. La relazione del tipo uno a molti viene esplicitata tramite il join. Il risultato duplicherà le righe relative all'immobile che appartiene a più soggetti.
+#### 1) Creazione della vista. La relazione del tipo uno a molti viene esplicitata tramite il join. Il risultato duplicherà le righe relative all'immobile che appartiene a più soggetti.
 
 ```sql
 CREATE OR REPLACE VIEW  titg_sogg AS SELECT
@@ -412,7 +412,7 @@ CREATE OR REPLACE VIEW  titg_sogg AS SELECT
 	JOIN codici_diritto dir ON tit.codice_diritto = dir.codice_diritto
 ```
 
-2) Creazione della vista aggregata. Viene creata la colonna soggetto che contiene in un'unica riga tutti i titolari dell'immobile.
+#### 2) Creazione della vista aggregata. Viene creata la colonna soggetto che contiene in un'unica riga tutti i titolari dell'immobile.
 
 ```sql
 CREATE OR REPLACE VIEW titg_sogg_json AS SELECT
@@ -514,7 +514,6 @@ FROM ter_1_clean ter
 JOIN titp_sogp_json j ON ter.identificativo_immobile = j.identificativo_immobile
 JOIN qualita q ON ter.qualita = q.id_qualita
 ```
-
 
 ## Creazione delle relazioni tra le geometrie "Particelle" e i dati censuari.
 
@@ -668,7 +667,7 @@ La somma del numero delle particelle soggetti fisici e del numero delle particel
 #### Particelle senza titolarità
 La tabella partite_speciali_terreni contiene le particelle che non hanno titolarità. Può tornare utile creare un layer geometrico distinto per tale categoria di particelle.
 
-1) Selezione e creazione della vista con la partite speciali terreni.
+#### 1) Selezione e creazione della vista con la partite speciali terreni.
 
 ```sql
 CREATE OR REPLACE VIEW particelle_partite_speciali_terreni AS
@@ -700,7 +699,7 @@ JOIN partite_speciali_terreni p ON ter_1.partita = p.codice_partita
 WHERE ter_1.partita IN ('1', '2', '3', '4', '5', '0')
 ```
 
-2) Creazione delle geometrie
+#### 2) Creazione delle geometrie
 
 ```sql
 CREATE MATERIALIZED VIEW particellare_partite_speciali_mv AS
@@ -719,13 +718,13 @@ WITH DATA
 
 
 ## Estrazione delle particelle appartenenti ad un determinato soggetto.
-Si vogliono estrarre, per esempio, le particelle di un dato comune. Bisogna interrogare il campo soggetto (che è un json array).
+Si vogliono estrarre, per esempio, le particelle di un dato comune. Bisogna interrogare il campo soggetto (che è un json array):
 
 ```sql
 SELECT * FROM particellare_persone_giuridiche_mv WHERE (soggetto::jsonb @> '[{"denominazione": "VALORE"}]'); -- sotituire a VALORE il valore desiderato (es. COMUNE DI XXXX)
 ```
 
-Per creare il particellare con il solo soggetto.
+Per creare il particellare con il solo soggetto:
 
 ```sql
 CREATE MATERIALIZED VIEW particellare_SOGGETTO_mv AS
