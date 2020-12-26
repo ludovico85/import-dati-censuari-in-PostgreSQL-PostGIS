@@ -25,6 +25,50 @@ Ogni tipo di file è costituito da una tabella che può contenere diversi tipi d
 
 - .TIT contiene sia la chiave identificativo immobile che la chiave identificativo soggetto (oltre che la chiave identificativo titolarietà);
 
+
+## Struttura del database
+**Tabelle**
+
+- ter =  tabella derivata dal file .TER.
+- sogp = tabella derivata dal file .SOG con TIPO SOGGETTO = 'P' (persona fisica).
+- sogg = tabella derivata dal file .SOG con TIPO SOGGETTO = 'G' (persona giuridica).
+- tit = tabella derivata dal file .TIT.
+- codici_diritto = tabella contenente l'identificativo e la descrizione dei CODICI DIRITTO (pag. 36 del DOC. ES-23-IS-05).
+- qualita = tabella contenente l'identificativo e la descrizione dei CODICI QUALITA' (pag. 38 del DOC. ES-23-IS-05).
+- partite_speciali_terreni = tabella contenente l'identificativo e la descrizione delle PARTITE SPECIALI DEL CATASTO TERRENI (pag. 45 del DOC. ES-23-IS-05).
+- partite_speciali_fabbricati = tabella contenente l'identificativo e la descrizione delle PARTITE SPECIALI DEL CATASTO FABBRICATI (pag. 45 del DOC. ES-23-IS-05).
+- acque = layer creato dal plugin cxf_in.
+- confine = layer creato dal plugin cxf_in.
+- fabbricati = layer creato dal plugin cxf_in.
+- fiduciali = layer creato dal plugin cxf_in.
+- linee = layer creato dal plugin cxf_in.
+- particelle = layer creato dal plugin cxf_in.
+- selezione = layer creato dal plugin cxf_in.
+- simboli = layer creato dal plugin cxf_in.
+- strade = layer creato dal plugin cxf_in.
+- testi = layer creato dal plugin cxf_in.
+
+**Viste**
+
+- ter_1 = vista derivata dalla tabella ter contenente solo il TIPO RECORD = '1'.
+- ter_1_clean = vista derivata dalla vista ter_1 ottenuta escludendo i codici PARTITA '0', '4', '5' e escludendo i subalterni.
+- titg = vista derivata dalla tabella tit con TIPO SOGGETTO = 'P' (persona fisica).
+- titg = vista derivata dalla tabella tit con TIPO SOGGETTO = 'G' (persona giuridica).
+- titp_sogp = vista creata tramite join tra titp e sogp utilizzando il campo in comune identificativo_soggetto (persone fisiche).
+- titp_sogp_json = vista ottenuta tramite l'aggregazione del campo identificativo_immobile dalla vista titp_sogp.
+- titg_sogg = vista creata tramite join tra titg e sogg utilizzando il campo in comune identificativo_soggetto (persone giuridiche).
+- titg_sogg_json = vista ottenuta tramite l'aggregazione del campo identificativo_immobile dalla vista titg_sogg.
+- titp_sogp_ter_persone_fisiche = vista ottenuta tramite tramite join tra titp_sogp_json e la vista ter_1_clean utilizzando il campo in comune identificativo_immobile
+(persone fisiche).
+- titp_sogp_ter_persone_giuridiche = vista ottenuta tramite tramite join tra titg_sogg_json e la vista ter_1_clean utilizzando il campo in comune identificativo_immobile (persone giuridiche).
+- particelle_partite_speciali_terreni = vista contenente le particelle senza titolairtà ottenuta tramite join tra la vista ter_1 e la tabella partite_speciali_terreni.
+
+**Viste materializzate**
+
+- particellare_persone_fisiche_mv: vista ottenuta tramite join tra titp_sogp_ter_persone_fisiche e il layer particelle utilizzando il campo in comune cm_fg_plla che identifica in modo univoco le particelle (persone fisiche). **Contiene le geometrie.**
+- particellare_persone_giuridiche_mv: vista ottenuta tramite join tra titg_sogg_ter_persone_fisiche e il layer particelle utilizzando il campo in comune cm_fg_plla che identifica in modo univoco le particelle (persone giuridiche). **Contiene le geometrie.**
+- particellare_partite_speciali_mv: vista ottenuta tramite join tra particelle_partite_speciali_terreni e il layer particelle utilizzando il campo in comune cm_fg_plla che identifica in modo univoco le particelle. **Contiene le geometrie.**
+
 ## Importazione dei singoli file in PostgreSQL/PostGIS - .FAB (in costruzione).
 
 ## Importazione dei singoli file in PostgreSQL/PostGIS - .TER.
@@ -89,7 +133,7 @@ CREATE TABLE public.ter(
 Convertire il file .TER in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link:
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
-Per evitare errori è preferibbile che i CSV abbiano l'header definito come da [esempio.csv](csv/TER.csv)
+Per evitare errori è preferibile che i CSV abbiano l'header definito come da [esempio.csv](csv/TER.csv)
 
 #### 3) Creazione della vista contenente solo il TIPO RECORD 1.
 
@@ -659,7 +703,7 @@ WHERE ter_1.partita IN ('1', '2', '3', '4', '5', '0')
 2) Creazione delle geometrie
 
 ```sql
-CREATE MATERIALIZED VIEW particellare_partite_speciali AS
+CREATE MATERIALIZED VIEW particellare_partite_speciali_mv AS
 SELECT row_number() OVER ()::integer AS gid,
 	p.codice_comune AS codice_comune,
 	p.fg AS fg,
@@ -678,13 +722,13 @@ WITH DATA
 Si vogliono estrarre, per esempio, le particelle di un dato comune. Bisogna interrogare il campo soggetto (che è un json array).
 
 ```sql
-SELECT * FROM particellare_persone_giuridiche WHERE (soggetto::jsonb @> '[{"denominazione": "VALORE"}]'); -- sotituire a VALORE il valore desiderato (es. COMUNE DI XXXX)
+SELECT * FROM particellare_persone_giuridiche_mv WHERE (soggetto::jsonb @> '[{"denominazione": "VALORE"}]'); -- sotituire a VALORE il valore desiderato (es. COMUNE DI XXXX)
 ```
 
 Per creare il particellare con il solo soggetto.
 
 ```sql
-CREATE MATERIALIZED VIEW particellare_SOGGETTO AS
-SELECT * FROM particellare_persone_giuridiche WHERE (soggetto::jsonb @> '[{"denominazione": "VALORE"}]') -- sotituire a VALORE il valore desiderato (es. COMUNE DI XXXX)
+CREATE MATERIALIZED VIEW particellare_SOGGETTO_mv AS
+SELECT * FROM particellare_persone_giuridiche_mv WHERE (soggetto::jsonb @> '[{"denominazione": "VALORE"}]') -- sotituire a VALORE il valore desiderato (es. COMUNE DI XXXX)
 WITH DATA
 ```
