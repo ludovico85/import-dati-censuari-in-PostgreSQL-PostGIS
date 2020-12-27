@@ -31,7 +31,7 @@ Per una gestione migliore della varie tabelle e viste che si andranno a creare √
 - catasto_fabbricati = conterr√† il dataset relativo al catasto fabbircati
 - cxf_in = schema creato in automatico dal plug in cxf_in che conterr√† i dati geografici
 
-**Schema catasto_terreni**
+### Schema catasto_terreni
 
 **Tabelle**
 
@@ -60,14 +60,14 @@ Per una gestione migliore della varie tabelle e viste che si andranno a creare √
 - particelle_partite_speciali_terreni = vista contenente le particelle senza titolairt√† ottenuta tramite join tra la vista ter_1 e la tabella partite_speciali_terreni.
 
 
-**Schema catasto_fabbricati**
+## Schema catasto_fabbricati
 
 **Tabelle**
 
 **Viste**
 
 
-**Schema cxf_in**
+ ## Schema cxf_in
 
 **Tabelle**
 
