@@ -90,7 +90,39 @@ Per una gestione migliore della varie tabelle e viste che si andranno a creare �
 
 ## Importazione dei singoli file in PostgreSQL/PostGIS - .FAB (in costruzione).
 
-## Importazione dei singoli file in PostgreSQL/PostGIS - .TER.
+## Impostazioni iniziali del database
+Il pimo step riguarda la creazione degli schemi catasto_terreni e catasto_fabbricati:
+
+```sql
+CREATE SCHEMA catasto_terreni;
+CREATE SCHEMA catasto_fabbricati:
+```
+Lo schema cxf_in viene costruito in automatico dal plugin cxf_in. In caso si voglia importare i cxf in altro modo:
+
+```sql
+CREATE SCHEMA cxf_in;
+```
+
+Bisogna installare l'estensione postgis:
+
+```sql
+CREATE EXTENSION postgis
+```
+
+Per verificare quale sia lo schema corrente, nel quale si sta lavorando, bisogna interrogare il search_path:
+
+```sql
+SHOW search_path
+```
+
+search_path | descrizione
+:------
+"$user",public
+
+
+
+## Elaborazione dei dati nello schema catasto_terreni
+### Importazione dei singoli file in PostgreSQL/PostGIS - .TER.
 Il file è costituito da 4 differenti tipi record. La particella è identificata attraverso il campo IDENTIFICATIVO IMMOBILE. La presenza di diversi tipi di record può creare delle righe duplicate per ogni particella.
 
 - TIPO RECORD 1: contiene le caratteristiche della particella. E' il record di interesse che verrà utilizzato per ricostruire il dato spaziale;
@@ -101,7 +133,7 @@ Il file è costituito da 4 differenti tipi record. La particella è identificata
 
 - TIPO RECORD 4: porzioni della particella.
 
-#### 1) Creazione della tabella contenente tutti i campi (Per non creare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi).
+#### 1) Creazione della tabella .ter contenente tutti i campi (Per non creare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi).
 
 ```sql
 CREATE TABLE public.ter(
@@ -162,7 +194,7 @@ CREATE OR REPLACE VIEW public.ter_1 AS
   WHERE tipo_record = '1'
 ```
 
-### Pulizia della vista ter_1.
+#### 4) Pulizia della vista ter_1.
 La Vista risultante dalla selezione del tipo_record = '1' può essere ulteriormente "pulita" eliminando quelle particelle che non hanno titolarità come le particelle soppresse, acque, strade. Le informazioni possono essere ricavate dal campo partita:
 
 partita | descrizione
@@ -182,7 +214,7 @@ CREATE OR REPLACE VIEW public.ter_1_clean AS
 	WHERE ter_1.partita IS DISTINCT FROM '0' AND ter_1.partita IS DISTINCT FROM '4' AND ter_1.partita IS DISTINCT FROM '5' AND subalterno IS NULL
 ```
 
-## Importazione dei singoli file in PostgreSQL/PostGIS - .SOG.
+### Importazione dei singoli file in PostgreSQL/PostGIS - .SOG.
 Il file è costituito da 2 differenti tipi record. Il soggetto è identificato attraverso il campo IDENTIFICATIVO SOGGETTO.
 
 - TIPO RECORD P: intestato a persona fisica;
@@ -240,7 +272,7 @@ https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
 Per evitare errori è preferibbile che i CSV abbiano l'header definito come da [esempio.csv](csv/SOGG.csv)
 
-## Importazione dei singoli file in PostgreSQL/PostGIS - .TIT.
+### Importazione dei singoli file in PostgreSQL/PostGIS - .TIT.
 Il file contiene un unico tipo di record.
 
 #### 1) Creazione della tabella titolarità contenente tutti i campi (Per non creare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi).
@@ -302,7 +334,7 @@ CREATE OR REPLACE VIEW titg AS
 	WHERE tipo_soggetto = 'G'
 ```
 
-## Creazione delle tabella aggiuntive per la codifica dei codici.
+### Creazione delle tabella aggiuntive per la codifica dei codici.
 Può risultare utile creare alcune tabelle per la codifica dei codici contenuti all'interno del record descrizione particelle.
 
 #### Tabella delle qualità colturali.
@@ -361,7 +393,7 @@ CREATE TABLE public.codici_diritto
 ```
 Per inserire i valori utilizzare la funzione di PgAdmin per l'importazione dei CSV e utilizzare il file [diritto.csv](csv/diritto.csv)
 
-## Creazione delle relazioni tra i tipi di file: soggetti persone fisicihe (sogp) e titolarità persone fisiche (titp).
+### Creazione delle relazioni tra i tipi di file: soggetti persone fisicihe (sogp) e titolarità persone fisiche (titp).
 Ogni immobile (particella o fabbricato) può appartenere a più titolari. Per gestire questa relazione (uno a molti) è possibile utilizzare le funzioni di aggregazione. In questo specifico caso è la scelta è ricaduta sulla creazione di un json che contiene i diversi titolari appartenenti ad un dato immobile. Il vantaggio di utilizzare il json è che questo è interrogabile. La creazione della relazione viene fatta in due step.
 
 #### 1) Creazione della vista. La relazione del tipo uno a molti viene esplicitata tramite il join. Il risultato duplicherà le righe relative all'immobile che appartiene a più soggetti.
@@ -409,7 +441,7 @@ FROM titp_sogp
 GROUP by identificativo_immobile, tipo_immobile, tipo_soggetto
 ```
 
-## Creazione delle relazioni tra i tipi di file: soggetti giuridici (sogg) e titolarità soggetti giuridici (titg).
+### Creazione delle relazioni tra i tipi di file: soggetti giuridici (sogg) e titolarità soggetti giuridici (titg).
 Ogni immobile (particella o fabbricato) può appartenere a più titolari. Per gestire questa relazione (uno a molti) è possibile utilizzare le funzioni di aggregazione. In questo specifico caso è la scelta è ricaduta sulla creazione di un json che contiene i diversi titolari appartenenti ad un dato immobile. Il vantaggio di utilizzare il json è che questo è interrogabile. La creazione della relazione viene fatta in due step.
 
 #### 1) Creazione della vista. La relazione del tipo uno a molti viene esplicitata tramite il join. Il risultato duplicherà le righe relative all'immobile che appartiene a più soggetti.
@@ -454,7 +486,7 @@ FROM titg_sogg
 GROUP by identificativo_immobile, tipo_immobile, tipo_soggetto
 ```
 
-## Creazione delle relazioni tra i tipi di file: soggetti_titolarità persone fisiche (titp_sogp_json) e immobili (ter_1_clean).
+### Creazione delle relazioni tra i tipi di file: soggetti_titolarità persone fisiche (titp_sogp_json) e immobili (ter_1_clean).
 
 ```sql
 CREATE OR REPLACE VIEW titp_sogp_ter_persone_fisiche AS
@@ -494,7 +526,7 @@ JOIN titp_sogp_json j ON ter.identificativo_immobile = j.identificativo_immobile
 JOIN qualita q ON ter.qualita = q.id_qualita
 ```
 
-## Creazione delle relazioni tra i tipi di file: soggetti_titolarità persone giuridiche (titg_sogg_json) e immobili (ter_1_clean).
+### Creazione delle relazioni tra i tipi di file: soggetti_titolarità persone giuridiche (titg_sogg_json) e immobili (ter_1_clean).
 
 ```sql
 CREATE OR REPLACE VIEW titg_sogg_ter_persone_giuridiche AS
