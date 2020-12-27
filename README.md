@@ -721,6 +721,8 @@ La tabella partite_speciali_terreni contiene le particelle che non hanno titolar
 #### 1) Selezione e creazione della vista con la partite speciali terreni.
 
 ```sql
+SET search_path TO catasto_terreni; -- IMPORTANTE: ABILITARE LO SCHEMA ESATTO, ALTRIMENTI LE TABELLE VERRANNO CREATE NELLO SCHEMA DI DEFAULT public;
+
 CREATE OR REPLACE VIEW particelle_partite_speciali_terreni AS
 SELECT ter_1.*,
 	CASE -- nuova colonna che permette di assegnare un codice univoco per foglio e particella. Servirà per il join con le geometrie del catasto
@@ -753,6 +755,8 @@ WHERE ter_1.partita IN ('1', '2', '3', '4', '5', '0')
 #### 2) Creazione delle geometrie
 
 ```sql
+SET search_path TO cxf_in; -- IMPORTANTE: ABILITARE LO SCHEMA ESATTO, ALTRIMENTI LE TABELLE VERRANNO CREATE NELLO SCHEMA DI DEFAULT public;
+
 CREATE MATERIALIZED VIEW particellare_partite_speciali_mv AS
 SELECT row_number() OVER ()::integer AS gid,
 	p.codice_comune AS codice_comune,
@@ -762,11 +766,10 @@ SELECT row_number() OVER ()::integer AS gid,
 	j.*,
 	p.geom as geom
 FROM
-	"Particelle" p
-	JOIN particelle_partite_speciali_terreni j ON p.com_fg_plla = j.com_fg_plla
+	Particelle p
+	JOIN catasto_terreni.particelle_partite_speciali_terreni j ON p.com_fg_plla = j.com_fg_plla
 WITH DATA
 ```
-
 
 ### Estrazione delle particelle appartenenti ad un determinato soggetto.
 Si vogliono estrarre, per esempio, le particelle di un dato comune. Bisogna interrogare il campo soggetto (che è un json array):
