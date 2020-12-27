@@ -27,6 +27,13 @@ Ogni tipo di file è costituito da una tabella che può contenere diversi tipi d
 
 
 ## Struttura del database
+Per una gestione migliore della varie tabelle e viste che si andranno a creare è opportuno organizzare il database in schemi differenti:
+- catasto_terreni = conterrà il dataset relativo al catasto terreni
+- catasto_fabbricati = conterrà il dataset relativo al catasto fabbircati
+- cxf_in = schema creato in automatico dal plug in cxf_in che conterrà i dati geografici
+
+**Schema catasto_terreni**
+
 **Tabelle**
 
 - ter =  tabella derivata dal file .TER.
@@ -37,16 +44,6 @@ Ogni tipo di file è costituito da una tabella che può contenere diversi tipi d
 - qualita = tabella contenente l'identificativo e la descrizione dei CODICI QUALITA' (pag. 38 del DOC. ES-23-IS-05).
 - partite_speciali_terreni = tabella contenente l'identificativo e la descrizione delle PARTITE SPECIALI DEL CATASTO TERRENI (pag. 45 del DOC. ES-23-IS-05).
 - partite_speciali_fabbricati = tabella contenente l'identificativo e la descrizione delle PARTITE SPECIALI DEL CATASTO FABBRICATI (pag. 45 del DOC. ES-23-IS-05).
-- acque = layer creato dal plugin cxf_in.
-- confine = layer creato dal plugin cxf_in.
-- fabbricati = layer creato dal plugin cxf_in.
-- fiduciali = layer creato dal plugin cxf_in.
-- linee = layer creato dal plugin cxf_in.
-- particelle = layer creato dal plugin cxf_in.
-- selezione = layer creato dal plugin cxf_in.
-- simboli = layer creato dal plugin cxf_in.
-- strade = layer creato dal plugin cxf_in.
-- testi = layer creato dal plugin cxf_in.
 
 **Viste**
 
@@ -63,11 +60,33 @@ Ogni tipo di file è costituito da una tabella che può contenere diversi tipi d
 - titp_sogp_ter_persone_giuridiche = vista ottenuta tramite tramite join tra titg_sogg_json e la vista ter_1_clean utilizzando il campo in comune identificativo_immobile (persone giuridiche).
 - particelle_partite_speciali_terreni = vista contenente le particelle senza titolairtà ottenuta tramite join tra la vista ter_1 e la tabella partite_speciali_terreni.
 
+**Schema catasto_fabbricati**
+
+**Tabelle**
+
+**Viste**
+
+**Schema cxf_in**
+
+**Tabelle**
+
+- acque = layer creato dal plugin cxf_in.
+- confine = layer creato dal plugin cxf_in.
+- fabbricati = layer creato dal plugin cxf_in.
+- fiduciali = layer creato dal plugin cxf_in.
+- linee = layer creato dal plugin cxf_in.
+- particelle = layer creato dal plugin cxf_in.
+- selezione = layer creato dal plugin cxf_in.
+- simboli = layer creato dal plugin cxf_in.
+- strade = layer creato dal plugin cxf_in.
+- testi = layer creato dal plugin cxf_in.
+
 **Viste materializzate**
 
 - particellare_persone_fisiche_mv: vista ottenuta tramite join tra titp_sogp_ter_persone_fisiche e il layer particelle utilizzando il campo in comune cm_fg_plla che identifica in modo univoco le particelle (persone fisiche). **Contiene le geometrie.**
 - particellare_persone_giuridiche_mv: vista ottenuta tramite join tra titg_sogg_ter_persone_fisiche e il layer particelle utilizzando il campo in comune cm_fg_plla che identifica in modo univoco le particelle (persone giuridiche). **Contiene le geometrie.**
 - particellare_partite_speciali_mv: vista ottenuta tramite join tra particelle_partite_speciali_terreni e il layer particelle utilizzando il campo in comune cm_fg_plla che identifica in modo univoco le particelle. **Contiene le geometrie.**
+
 
 ## Importazione dei singoli file in PostgreSQL/PostGIS - .FAB (in costruzione).
 
