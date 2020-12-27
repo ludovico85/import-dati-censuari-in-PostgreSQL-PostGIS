@@ -95,7 +95,7 @@ Il pimo step riguarda la creazione degli schemi catasto_terreni e catasto_fabbri
 
 ```sql
 CREATE SCHEMA catasto_terreni;
-CREATE SCHEMA catasto_fabbricati:
+CREATE SCHEMA catasto_fabbricati;
 ```
 Lo schema cxf_in viene costruito in automatico dal plugin cxf_in. In caso si voglia importare i cxf in altro modo:
 
@@ -106,19 +106,20 @@ CREATE SCHEMA cxf_in;
 Bisogna installare l'estensione postgis:
 
 ```sql
-CREATE EXTENSION postgis
+CREATE EXTENSION postgis;
 ```
 
 Per verificare quale sia lo schema corrente, nel quale si sta lavorando, bisogna interrogare il search_path:
 
 ```sql
-SHOW search_path
+SHOW search_path;
 ```
 
-search_path | descrizione
-:------
-"$user",public
+Di default lo schema è il public. Per abilitare lo schema nel quale si vuole lavorare:
 
+```sql
+SET search_path TO schema; -- sostituire con il nome dello schema
+```
 
 
 ## Elaborazione dei dati nello schema catasto_terreni
