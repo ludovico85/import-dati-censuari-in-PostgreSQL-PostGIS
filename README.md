@@ -561,9 +561,9 @@ JOIN qualita q ON ter.qualita = q.id_qualita;
 ## Elaborazione dei dati nello schema catasto_fabbricati
 
 ### Importazione dei singoli file in PostgreSQL/PostGIS - .FAB (in costruzione).
-### Importazione dei singoli file in PostgreSQL/PostGIS - .SOG.
-### Importazione dei singoli file in PostgreSQL/PostGIS - .TIT.
-### Creazione delle tabella aggiuntive per la codifica dei codici.
+### Importazione dei singoli file in PostgreSQL/PostGIS - .SOG (in costruzione).
+### Importazione dei singoli file in PostgreSQL/PostGIS - .TIT (in costruzione).
+### Creazione delle tabella aggiuntive per la codifica dei codici (in costruzione).
 
 #### Tabella delle partite speciali.
 
@@ -581,11 +581,12 @@ VALUES
 ('A', 'beni coumni non censibili'),
 ('R', 'fabbircati rurali'),
 ('C', 'unità immobiliari soppresse');
+```
 
-### Creazione delle relazioni tra i tipi di file: soggetti persone fisicihe (sogp) e titolarità persone fisiche (titp).
-### Creazione delle relazioni tra i tipi di file: soggetti giuridici (sogg) e titolarità soggetti giuridici (titg).
-### Creazione delle relazioni tra i tipi di file: soggetti_titolarità persone fisiche (titp_sogp_json) e FABBRICATI.
-### Creazione delle relazioni tra i tipi di file: soggetti_titolarità persone giuridiche (titg_sogg_json) e FABBRICATI.
+### Creazione delle relazioni tra i tipi di file: soggetti persone fisicihe (sogp) e titolarità persone fisiche (titp) (in costruzione).
+### Creazione delle relazioni tra i tipi di file: soggetti giuridici (sogg) e titolarità soggetti giuridici (titg) (in costruzione).
+### Creazione delle relazioni tra i tipi di file: soggetti_titolarità persone fisiche (titp_sogp_json) e FABBRICATI (in costruzione).
+### Creazione delle relazioni tra i tipi di file: soggetti_titolarità persone giuridiche (titg_sogg_json) e FABBRICATI (in costruzione).
 
 
 ## Elaborazione dei dati nello schema cxf_in
