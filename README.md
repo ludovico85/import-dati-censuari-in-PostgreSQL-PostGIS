@@ -149,7 +149,7 @@ CREATE TABLE ter(
   tipo_record INTEGER,
   foglio TEXT,
   numero TEXT,
-  denominatore INTEGER,
+  denominatore TEXT,
   subalterno TEXT,
   edificialita TEXT,
   qualita TEXT,
@@ -187,7 +187,7 @@ CREATE TABLE ter(
 Convertire il file .TER in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link:
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
-Per evitare errori è preferibile che i CSV abbiano l'header definito come da [esempio.csv](csv/TER.csv)
+Per evitare errori è preferibile che i CSV abbiano l'header definito come da [esempio.csv](csv/TER.csv). Inoltre è necessario sostituire il separatore decimale virgola (',') con il punto ('.'). Utilizzare un qualsiasi editor di testo (Notepad++, ATOM, ecc.).
 
 #### 3) Creazione della vista contenente solo il TIPO RECORD 1.
 
@@ -247,10 +247,10 @@ CREATE TABLE sogp
 ```
 
 #### 2) Importazione dei dati.
-Convertire il file .TER in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link:
+Convertire il file .SOG in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link:
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
-Per evitare errori è preferibile che i CSV abbiano l'header definito come da [esempio.csv](csv/SOGP.csv)
+Per evitare errori è preferibile che i CSV abbiano l'header definito come da [esempio.csv](csv/SOGP.csv). Inoltre è necessario sostituire il separatore decimale virgola (',') con il punto ('.'). Utilizzare un qualsiasi editor di testo (Notepad++, ATOM, ecc.).
 
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
@@ -270,7 +270,7 @@ CREATE TABLE sogg
 );
 ```
 #### 4) Importazione dei dati.
-Convertire il file .TER in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link:
+Convertire il file .SOG in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link:
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
 Per evitare errori è preferibile che i CSV abbiano l'header definito come da [esempio.csv](csv/SOGG.csv)
@@ -316,10 +316,10 @@ CREATE TABLE tit
 ```
 
 #### 2) Importazione dei dati.
-Convertire il file .TER in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link:
+Convertire il file .TIT in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link:
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
-Per evitare errori è preferibile che i CSV abbiano l'header definito come da [esempio.csv](csv/TIT.csv)
+Per evitare errori è preferibile che i CSV abbiano l'header definito come da [esempio.csv](csv/TIT.csv). Inoltre è necessario sostituire il separatore decimale virgola (',') con il punto ('.'). Utilizzare un qualsiasi editor di testo (Notepad++, ATOM, ecc.).
 
 #### 3) Creazione della vista titolarità per i soggetti fisici.
 
