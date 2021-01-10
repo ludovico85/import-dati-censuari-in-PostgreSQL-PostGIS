@@ -14,7 +14,9 @@ I dati censuari sono costituiti da 4 tipi di file:
 
 - file soggetti (.SOG);
 
-- file titolarità (.TIT).
+- file titolarità (.TIT);
+
+- file parametri della richiesta (.PRM).
 
 Ogni tipo di file è costituito da una tabella che può contenere diversi tipi di record. Il collegamento tra i tipi di file è assicurato dalla presenta di chiavi specifiche:
 
