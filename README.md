@@ -597,6 +597,8 @@ VALUES
 Il plugin CXF_in importa i dati nel databse PostgreSQL/PostGIS nello schema cxf_in. Se si vuole, si possono copiare le tabelle in un altro schema (in questo modo consente di avere anche una copia di backup dei dati importati).
 **Nota bene: può succedere che l'importazione nel DB attraverso il plugin CXF_in generi degli errori a causa di geometrie non valide, interrompendo il processo. In tal caso occorre importare dapprima le geometrie in QGIS, ripararle e importarle in PostgreSQL/PostGIS.**
 
+![Error](/img/Error_PostGIS.JPG)
+
 #### Copia delle tabelle in altro schema (OPZIONALE)
 
 ```sql
