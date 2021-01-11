@@ -595,7 +595,7 @@ VALUES
 
 ## Elaborazione dei dati nello schema cxf_in
 Il plugin CXF_in importa i dati nel databse PostgreSQL/PostGIS nello schema cxf_in. Se si vuole, si possono copiare le tabelle in un altro schema (in questo modo consente di avere anche una copia di backup dei dati importati).
-**Nota bene: può succedere che l'importazione nel DB attraverso il plugin CXF_in generi degli errori a causa di geometrie non valide, interrompendo il processo. In tal caso occorre importare dapprima le geometrie in QGIS, ripararle e importarle in PostgreSQL/PostGIS.**
+**Nota bene: può succedere che l'importazione nel DB attraverso il plugin CXF_in generi degli errori a causa di geometrie non valide, interrompendo il processo. In tal caso occorre importare dapprima le geometrie nel db spatialite (in modo da consentire la georeferenzazione), caricarle in QGIS, ripararle (tramite lo strumento ripara geometrie) e importarle in PostgreSQL/PostGIS (utilizzando il tool Esporta in PostgreSQL).**
 
 ![Error](/img/Error_PostGIS.JPG)
 
@@ -617,6 +617,7 @@ CREATE TABLE schema.testi AS (SELECT * FROM cxf_in.testi);
 ### Creazione delle relazioni tra le geometrie particellari e i dati censuari (persone fisiche)
 
 #### 1) Creazione dell'identificativo univoco di particella da utilizzare nel join con la vista tit_sog_ter_persone_fisiche
+#### N.B. Se le geometrie sono state importate attraverso il tool Esporta in PostgreSQL di QGIS, è necessario specificare, negli script seguenti, la tabella Particelle tra apici ("Particelle").
 
 ```sql
 SET search_path TO cxf_in; -- IMPORTANTE: ABILITARE LO SCHEMA ESATTO, ALTRIMENTI LE TABELLE VERRANNO CREATE NELLO SCHEMA DI DEFAULT public;
