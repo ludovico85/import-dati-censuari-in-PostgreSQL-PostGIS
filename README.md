@@ -181,7 +181,11 @@ CREATE TABLE ter(
   partita TEXT,
   annotazione TEXT,
   identificativo_mutazione_iniziale TEXT,
-  identificativo_mutazione_finale TEXT
+  identificativo_mutazione_finale TEXT,
+  codice_causale_atto_generante TEXT,
+  descrizione_atto_generante TEXT,
+  codice_causale_atto_conclusivo TEXT,
+  descrizione_atto_conclusivo TEXT
 );
 ```
 
