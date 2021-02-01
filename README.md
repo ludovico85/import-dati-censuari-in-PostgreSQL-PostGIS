@@ -319,7 +319,11 @@ CREATE TABLE tit
 	data_registrazione_atti_concluso TEXT,
 	identificativo_mutazione_iniziale TEXT,
 	identificativo_mutazione_finale TEXT,
-	identificativo_titolarita INTEGER NOT NULL
+	identificativo_titolarita INTEGER NOT NULL,
+    codice_causale_atto_generante TEXT,
+    descrizione_atto_generante TEXT,
+    codice_causale_atto_conclusivo TEXT,
+    descrizione_atto_conclusivo TEXT
 );
 ```
 
@@ -561,7 +565,7 @@ ter.are,
 ter.centiare,
 j.soggetto
 FROM ter_1_clean ter
-JOIN titp_sogp_json j ON ter.identificativo_immobile = j.identificativo_immobile
+JOIN titg_sogg_json j ON ter.identificativo_immobile = j.identificativo_immobile
 JOIN qualita q ON ter.qualita = q.id_qualita;
 ```
 
