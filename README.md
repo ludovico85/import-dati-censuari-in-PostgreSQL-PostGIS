@@ -223,7 +223,7 @@ CREATE OR REPLACE VIEW ter_1_clean AS
 	WHERE ter_1.partita IS DISTINCT FROM '0' AND ter_1.partita IS DISTINCT FROM '4' AND ter_1.partita IS DISTINCT FROM '5' AND subalterno IS NULL;
 ```
 
-N.B. se nella richiesta dei dati le partite speciali non sono state scaricate è possibile saltare il passaggio (bisogna tuttavia eliminare i subalterni). Nel file .PRM è possibile verificare la Tipologia di esportazione che può essere 1) Terreni completa ptaspec no oppure 2) Terreni completa ptaspec si. In entrambi casi il passaggio della pulizia della vista ter_1 non modifica il risultato. Si consiglia comunque di eseguire il passaggio. 
+N.B. se nella richiesta dei dati le partite speciali non sono state scaricate è possibile saltare il passaggio (bisogna tuttavia eliminare i subalterni). Nel file .PRM è possibile verificare la Tipologia di esportazione che può essere 1) Terreni completa ptaspec no oppure 2) Terreni completa ptaspec si. In entrambi casi il passaggio della pulizia della vista ter_1 non modifica il risultato. Si consiglia comunque di eseguire il passaggio.
 
 ### Importazione dei singoli file in PostgreSQL/PostGIS - .SOG.
 Il file è costituito da 2 differenti tipi record. Il soggetto è identificato attraverso il campo IDENTIFICATIVO SOGGETTO.
@@ -583,7 +583,7 @@ CREATE TABLE partite_speciali_fabbricati
 	descrizione TEXT
 );
 
-INSERT INTO public.partite_speciali_fabbricati (codice_partita, descrizione)
+INSERT INTO partite_speciali_fabbricati (codice_partita, descrizione)
 VALUES
 ('0', 'beni comuni censibili'),
 ('A', 'beni coumni non censibili'),
