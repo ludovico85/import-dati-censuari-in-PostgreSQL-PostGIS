@@ -823,3 +823,8 @@ SELECT DISTINCT identificativo_immobile FROM tit WHERE tipo_immobile = 'T' AND t
 ```
 
 La somma del numero delle particelle soggetti fisici e del numero delle particelle soggetti giuridici non è sempre uguale al numero totale degli immobili poiché alcune particelle potrebbero essere in comune tra i due gruppi.
+
+## EXTRA
+### Estrazione del geojson utilizzando ogr2ogr
+
+ogr2ogr -f GeoJSON out.json "PG:host=myhost dbname=mydb user=ubuntu password=mypassword" \ -sql "select * from table"
