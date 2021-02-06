@@ -830,3 +830,20 @@ La somma del numero delle particelle soggetti fisici e del numero delle particel
 ```
 ogr2ogr -f GeoJSON out.json "PG:host=myhost dbname=mydb user=ubuntu password=mypassword" \ -sql "select * from table"
 ```
+
+### Verifica del Sistema di coordinate
+
+```sql
+SELECT ST_SRID(geom) FROM particellare_proprieta_comunale LIMIT 1;
+```
+
+### Riproiezione
+
+```sql
+CREATE MATERIALIZED VIEW particellare_proprieta_comunale_4326 AS
+SELECT gid, codice_comune, foglio, particella, fg_plla, qualita, classe, ettari, are, centiare, soggetto,
+	ST_Transform(geom,4326)
+FROM
+	particellare_proprieta_comunale
+WITH DATA
+```
