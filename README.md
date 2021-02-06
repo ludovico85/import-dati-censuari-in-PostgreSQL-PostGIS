@@ -827,4 +827,6 @@ La somma del numero delle particelle soggetti fisici e del numero delle particel
 ## EXTRA
 ### Estrazione del geojson utilizzando ogr2ogr
 
+```
 ogr2ogr -f GeoJSON out.json "PG:host=myhost dbname=mydb user=ubuntu password=mypassword" \ -sql "select * from table"
+```
