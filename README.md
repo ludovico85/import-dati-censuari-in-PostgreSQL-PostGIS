@@ -346,14 +346,33 @@ VALUES
 ```
 ### Elaborazioni dei file
 #### Elaborazione della tabella .TER.
-##### 1) Creazione della vista contenente solo il TIPO RECORD 1.
+Le elaborazioni consistono nell'assegnazione della descrizione della qualità colturale contenuta nella tabella qualità e nella pulizia delle particelle partite speciali.
+##### 1) Aggiornamento della descrizione della qualità colturale
+```sql
+ALTER TABLE ter
+ADD COLUMN descrizione_qualita TEXT;
+
+UPDATE ter as t
+SET descrizione_qualita = q.descrizione
+FROM qualita as q
+WHERE t.qualita = q.id_qualita
+
+```
+##### 2) Creazione della vista contenente solo il TIPO RECORD 1.
+Il tipo di record contiene la seguente codifica:
+tipo di record | descrizione
+:------ | :------
+1   | contenente le informazioni descrittive della
+particella ed i suoi identificativi
+2   | contenente le eventuali deduzioni
+3   | contenente le riserve della particella
+4   | contenente le porzioni della particella
 
 ```sql
 CREATE OR REPLACE VIEW ter_1 AS
   SELECT * FROM ter
   WHERE tipo_record = '1';
 ```
-
 ##### 2) Pulizia della vista ter_1.
 La Vista risultante dalla selezione del tipo_record = '1' può essere ulteriormente "pulita" eliminando quelle particelle che non hanno titolarità come le particelle soppresse, acque, strade. Le informazioni possono essere ricavate dal campo partita:
 
