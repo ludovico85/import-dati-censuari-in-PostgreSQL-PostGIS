@@ -362,8 +362,7 @@ WHERE t.qualita = q.id_qualita
 Il tipo di record contiene la seguente codifica:
 tipo di record | descrizione
 :------ | :------
-1   | contenente le informazioni descrittive della
-particella ed i suoi identificativi
+1   | contenente le informazioni descrittive della particella ed i suoi identificativi
 2   | contenente le eventuali deduzioni
 3   | contenente le riserve della particella
 4   | contenente le porzioni della particella
@@ -396,36 +395,31 @@ CREATE OR REPLACE VIEW ter_1_clean AS
 N.B. se nella richiesta dei dati le partite speciali non sono state scaricate è possibile saltare il passaggio (bisogna tuttavia eliminare i subalterni). Nel file .PRM è possibile verificare la Tipologia di esportazione che può essere 1) Terreni completa ptaspec no oppure 2) Terreni completa ptaspec si. In entrambi casi il passaggio della pulizia della vista ter_1 non modifica il risultato. Si consiglia comunque di eseguire il passaggio.
 
 #### Elaborazione della tabella .TIT.
-#### Elaborazione della tabella .SOG.
+Le elaborazioni consistono nell'assegnazione della descrizione dei codici di diritto contenuti nella tabella codici_diritto e nella creazione di due distinte tabelle, per le persone fisiche e per le persone giuridiche.
+##### 1) Aggiornamento della descrizione della qualità colturale
+```sql
+ALTER TABLE tit
+ADD COLUMN descrizione_diritto TEXT;
 
-
-
-
-
-
-
-
-
-
-
-
-#### 3) Creazione della vista titolarità per i soggetti fisici.
+UPDATE tit as t
+SET descrizione_diritto = d.descrizione
+FROM codici_diritto as d
+WHERE
+t.codice_diritto = d.codice_diritto
+```
+##### 2) Creazione della vista titolarità per i soggetti fisici.
 
 ```sql
 CREATE OR REPLACE VIEW titp AS
 	SELECT * FROM tit
 	WHERE tipo_soggetto = 'P';
 ```
-
-#### 4) Creazione della vista titolarità per i soggetti giuridici.
-
+##### 3) Creazione della vista titolarità per i soggetti giuridici.
 ```sql
 CREATE OR REPLACE VIEW titg AS
 	SELECT * FROM tit
 	WHERE tipo_soggetto = 'G';
 ```
-
-
 ### Creazione delle relazioni tra i tipi di file: soggetti persone fisicihe (sogp) e titolarità persone fisiche (titp).
 Ogni immobile (particella o fabbricato) può appartenere a più titolari. Per gestire questa relazione (uno a molti) è possibile utilizzare le funzioni di aggregazione. In questo specifico caso è la scelta è ricaduta sulla creazione di un json che contiene i diversi titolari appartenenti ad un dato immobile. Il vantaggio di utilizzare il json è che questo è interrogabile. La creazione della relazione viene fatta in due step.
 
@@ -438,7 +432,7 @@ CREATE OR REPLACE VIEW  titp_sogp AS SELECT
 	tit.tipo_immobile,
 	tit.identificativo_soggetto,
 	tit.tipo_soggetto,
-	dir.descrizione as diritto,
+	tit.descrizione_diritto as diritto,
 	concat(tit.quota_numeratore_possesso, '/', tit.quota_denominatore_possesso) AS quota,
 	sogp.cognome,
 	sogp.nome,
@@ -446,7 +440,6 @@ CREATE OR REPLACE VIEW  titp_sogp AS SELECT
 	sogp.data_nascita
 	FROM titp tit
 	JOIN sogP ON tit.identificativo_soggetto = sogp.identificativo_soggetto
-	JOIN codici_diritto dir ON tit.codice_diritto = dir.codice_diritto;
 ```
 
 #### 2) Creazione della vista aggregata. Viene creata la colonna soggetto che contiene in un'unica riga tutti i titolari dell'immobile.
@@ -486,14 +479,13 @@ CREATE OR REPLACE VIEW  titg_sogg AS SELECT
 	tit.tipo_immobile,
 	tit.identificativo_soggetto,
 	tit.tipo_soggetto,
-	dir.descrizione as diritto,
+	tit.descrizione_diritto as diritto,
 	concat(tit.quota_numeratore_possesso, '/', tit.quota_denominatore_possesso) AS quota,
 	sogg.denominazione,
 	sogg.codice_amministrativo_sede,
 	sogg.codice_fiscale
 	FROM titg tit
 	JOIN sogg ON tit.identificativo_soggetto = sogg.identificativo_soggetto
-	JOIN codici_diritto dir ON tit.codice_diritto = dir.codice_diritto;
 ```
 
 #### 2) Creazione della vista aggregata. Viene creata la colonna soggetto che contiene in un'unica riga tutti i titolari dell'immobile.
@@ -548,15 +540,14 @@ ter.numero,
 			END
 		)
 	END AS com_fg_plla,
-q.descrizione AS qualita,
+ter.descrizione_qualita AS qualita,
 ter.classe,
 ter.ettari,
 ter.are,
 ter.centiare,
 j.soggetto
 FROM ter_1_clean ter
-JOIN titp_sogp_json j ON ter.identificativo_immobile = j.identificativo_immobile
-JOIN qualita q ON ter.qualita = q.id_qualita;
+JOIN titp_sogp_json j ON ter.identificativo_immobile = j.identificativo_immobile;
 ```
 
 ### Creazione delle relazioni tra i tipi di file: soggetti_titolarità persone giuridiche (titg_sogg_json) e immobili (ter_1_clean).
@@ -588,15 +579,14 @@ ter.numero,
 			END
 		)
 	END AS com_fg_plla,
-q.descrizione AS qualita,
+ter.descrizione_qualita AS qualita,
 ter.classe,
 ter.ettari,
 ter.are,
 ter.centiare,
 j.soggetto
 FROM ter_1_clean ter
-JOIN titg_sogg_json j ON ter.identificativo_immobile = j.identificativo_immobile
-JOIN qualita q ON ter.qualita = q.id_qualita;
+JOIN titg_sogg_json j ON ter.identificativo_immobile = j.identificativo_immobile;
 ```
 
 
