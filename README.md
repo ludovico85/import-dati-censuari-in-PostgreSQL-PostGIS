@@ -349,7 +349,7 @@ CREATE OR REPLACE VIEW titg AS
 	WHERE tipo_soggetto = 'G';
 ```
 
-### Creazione delle tabella aggiuntive per la codifica dei codici.
+### Creazione delle tabelle aggiuntive per la codifica dei codici.
 Può risultare utile creare alcune tabelle per la codifica dei codici contenuti all'interno del record descrizione particelle.
 
 #### Tabella delle qualità colturali.
@@ -378,7 +378,7 @@ INSERT INTO partite_speciali_terreni (codice_partita, descrizione)
 VALUES
 ('1', 'aree di enti urbani e promiscui'),
 ('2', 'accessori comuni ad enti rurali e ad enti rurali e urbani'),
-('3', 'aree di fabbircati rurali, o urbani da accertare, divisi in subalterni'),
+('3', 'aree di fabbricati rurali, o urbani da accertare, divisi in subalterni'),
 ('4', 'acque esenti da estimo'),
 ('5', 'strade pubbliche'),
 ('0', 'particelle soppresse')
