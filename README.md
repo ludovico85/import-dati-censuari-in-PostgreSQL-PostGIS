@@ -589,7 +589,6 @@ FROM ter_1_clean ter
 JOIN titg_sogg_json j ON ter.identificativo_immobile = j.identificativo_immobile;
 ```
 
-
 ## Elaborazione dei dati nello schema catasto_fabbricati
 
 ### Importazione dei singoli file in PostgreSQL/PostGIS - .FAB (in costruzione).
