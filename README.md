@@ -439,7 +439,7 @@ SELECT
     p.nome,
     p.data_nascita,
     p.codice_fiscale,
-    concat(t.identificativo_immobile, '_', t.identificativo_soggetto) AS immo_sogp
+    concat(t.identificativo_immobile, '_', t.identificativo_soggetto, '_', t.descrizione_diritto) AS immo_sogp_diritto
 	FROM titp t
 	JOIN sogp p ON t.identificativo_soggetto = p.identificativo_soggetto
 ```
@@ -448,7 +448,7 @@ SELECT
 
 ```sql
 CREATE OR REPLACE VIEW titp_sogp_dist AS
-SELECT DISTINCT ON (immo_sogp) * FROM titp_sogp_aggr
+SELECT DISTINCT ON (immo_sogp_diritto) * FROM titp_sogp_aggr
 ```
 #### 3) Creazione della vista aggregata. Viene creata la colonna soggetto che contiene in un'unica riga tutti i titolari dell'immobile
 
@@ -491,14 +491,14 @@ SELECT
 	g.denominazione,
 	g.codice_amministrativo_sede,
 	g.codice_fiscale,
-	concat(t.identificativo_immobile, '_', t.identificativo_soggetto) AS immo_sogg
+    concat(t.identificativo_immobile, '_', t.identificativo_soggetto, '_', t.descrizione_diritto) AS immo_sogg_diritto
 	FROM titg t
 	JOIN sogg g ON t.identificativo_soggetto = g.identificativo_soggetto
 ```
 #### 2) Creazione della vista titg_sogg_dist. Tramite il `SELECT DISTINCT ON` sul campo univoco, verranno selezionate solo le relazioni univoche eliminando eventuali records duplicati
 ```sql
 CREATE OR REPLACE VIEW titg_sogg_dist AS
-SELECT DISTINCT ON (immo_sogg) * FROM titg_sogg_aggr
+SELECT DISTINCT ON (immo_sogg_diritto) * FROM titg_sogg_aggr
 ```
 #### 3) Creazione della vista aggregata. Viene creata la colonna soggetto che contiene in un'unica riga tutti i titolari dell'immobile
 ```sql
