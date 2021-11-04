@@ -607,6 +607,8 @@ Il file è costituito da 5 differenti tipi di records. Il fabbricato è distinto
 
 Prima di importare il dato è necessario separare i tipi di record (1,2,3,4,5) in altrettante tabelle (es. fab1, fab2, fab3, fab4 e fab5) in modo da non creare confusione nell'importazione del dato. L'operazione può essere fatta in excel, calc, ecc.
 
+ATTENZIONE CARATTERI SPECIALI NON RICONOSCIUTI: °, SOSTITUIRE LA VIRGOLA CON IL PUNTO
+
 ##### Tabella fab_1
 ```sql
 SET search_path TO catasto_fabbricati;
@@ -621,7 +623,7 @@ CREATE TABLE fab_1(
   zona TEXT,
   categoria TEXT,
   classe TEXT,
-  consistenza INTEGER,
+  consistenza REAL,
   superficie INTEGER,
   rendita_lire REAL,
   rendita_euro REAL,
@@ -669,6 +671,7 @@ CREATE TABLE fab_2(
   tipo_immobile TEXT,
   progressivo INTEGER,
   tipo_record INTEGER,
+  sezione_urbana TEXT,
   foglio TEXT,
   numero TEXT,
   denominatore TEXT,
