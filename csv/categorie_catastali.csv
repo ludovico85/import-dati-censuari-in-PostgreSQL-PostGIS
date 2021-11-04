@@ -1,0 +1,51 @@
+codice_categoria;descrizione_categoria
+A01;abitazioni di tipo signorile
+A02;abitazioni di tipo civile
+A03;abitazioni di tipo economico
+A04;abitazioni di tipo popolare
+A05;abitazioni di tipo ultrapopolare
+A06;abitazioni di tipo rurale
+A07;abitazioni in villini
+A08;abitazioni in ville
+A09;castelli, palazzi di eminenti pregi artistici e storici
+A10;uffici e studi privati
+A11;abitazioni ed alloggi tipici dei luoghi
+B01;"collegi, convitti; educandati, ricoveri orfanatrofi, ospizi, conventi, seminari, caserme"
+B02;case di cura ed ospedali senza fini di lucro
+B03;prigioni e riformatori
+B04;uffici pubblici
+B05;scuole e laboratori scientifici
+B06;biblioteche, pinacoteche, musei, gallerie, accademie, circoli ricreativi e culturali senza fine di lucro, che non hanno sede in edifici della categoria A/9
+B07;cappelle ed oratori non destinati all’esercizio pubblico dei culti
+B08;magazzini sotterranei per deposito derrate
+C01;negozi e botteghe
+C02;"magazzini e locali di deposito; cantine e soffitte se non unite all`unità immobiliare abitativa"
+C03;laboratori per arti e mestieri
+C04;fabbricati e locali per esercizi sportivi
+C05;stabilimenti balneari e di acque curative
+C06;stalle, scuderie, rimesse ed autorimesse
+C07;"tettoie; posti auto su aree private; posti auto coperti"
+D01;opifici
+D02;alberghi e pensioni
+D03;"teatri, cinematografi, sale per concerti e spettacoli; arene, parchi giochi, zoo-safari"
+D04;case di cura e ospedali
+D05;istituti di credito, cambio ed assicurazione
+D06;fabbricati, locali, aree attrezzate per esercizi sportivi
+D07;fabbricati costruiti o adattati per le speciali esigenze di un`attivita` industriale e non suscettibile di destinazione diversa senza radicali trasformazioni
+D08;fabbricati costruiti o adattati per le speciali esigenze di un`attivita` commerciale e non suscettibili di destinazione diversa senza radicali trasformazioni
+D09;"edifici galleggianti o assicurati a punti fissi del suolo; ponti privati soggetti a pedaggio; aree attrezzate per l’appoggio di palloni aerostatici e dirigibili"
+D10;fabbricati per funzioni produttive connesse alle attività agricole
+E01;"stazioni per servizi di trasporto terrestri, marittimi ed aerei; stazioni per metropolitane; stazioni per ferrovie; impianti di risalita in genere"
+E02;ponti comunali e provinciali soggetti a pedaggio
+E03;costruzioni e fabbricati per speciali esigenze pubbliche
+E04;recinti chiusi per mercati, fiere, posteggio bestiame e simili
+E05;fabbricati costituenti fortificazioni e loro dipendenze
+E06;fari, semafori torri per rendere pubblico l’uso dell’orologio comunale
+E07;fabbricati per l’esercizio pubblico dei culti
+E08;fabbricati e costruzioni nei cimiteri esclusi i colombari, i sepolcri e le tombe di famiglia
+E09;edifici a destinazione particolare non compresi nelle categorie precedenti del gruppo E
+F01;area urbana
+F02;unità collabenti
+F03;unità in corso di costruzione
+F04;unità in corso di definizione
+F05;lastrico solare
