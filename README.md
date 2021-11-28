@@ -1,4 +1,7 @@
 # Import-dati-censuari-in-PostgreSQL/PostGIS
+
+![GitHub last commit](https://img.shields.io/github/last-commit/ludovico85/import-dati-censuari-in-PostgreSQL-PostGIS?color=green&style=plastic)
+
 Il repository contiene i passaggi per l'importazione dei dati catastali censuari in un database PostgreSQL/PostGIS e per il collegamento dei dati stessi alle geometrie catastali importate utilizzando il plugin per QGIS CXF_in https://github.com/saccon/CXF_in. Nella costruzione del database non sono state inserite esplicitamente delle relazioni tramite chiavi primarie/esterne a causa della non univocità dei valori presenti in alcuni tipi di file. Tuttavia le relazioni sono assicurate attarverso delle operazioni di join.
 
 ## Breve descrizione dei dati catastali censuari
@@ -60,7 +63,6 @@ Per una gestione migliore della varie tabelle e viste che si andranno a creare �
 (persone fisiche).
 - titp_sogp_ter_persone_giuridiche = vista ottenuta tramite tramite join tra titg_sogg_json e la vista ter_1_clean utilizzando il campo in comune identificativo_immobile (persone giuridiche).
 - particelle_partite_speciali_terreni = vista contenente le particelle senza titolairtà ottenuta tramite join tra la vista ter_1 e la tabella partite_speciali_terreni.
-
 
 ## Schema catasto_fabbricati
 
@@ -312,9 +314,7 @@ CREATE TABLE qualita
 	descrizione TEXT
 );
 ```
-
 Per inserire i valori utilizzare la funzione di PgAdmin per l'importazione dei CSV e utilizzare il file [qualita.csv](csv/qualita.csv) .
-
 ##### Tabella dei codici di diritto
 ```sql
 CREATE TABLE codici_diritto
@@ -1034,8 +1034,104 @@ SELECT DISTINCT identificativo_immobile FROM tit WHERE tipo_immobile = 'T' AND t
 Per conoscere quante sono le particelle la cui titolerità riguarda soggetti giuridici:
 ```sql
 SELECT DISTINCT identificativo_immobile FROM tit WHERE tipo_immobile = 'T' AND tipo_soggetto = 'G'
-```
+```sql
 La somma del numero delle particelle soggetti fisici e del numero delle particelle soggetti giuridici non è sempre uguale al numero totale degli immobili poiché alcune particelle potrebbero essere in comune tra i due gruppi.
+```
+
+## Gestione dei dati in QGIS
+### Catasto fabbricati
+La gestione dei dati in QGIS può avvenire in maniera semplificata utilizzando le relazioni tra le particelle e l'identificativo dell'immobile.
+
+1) Creazione della Vista univoca con i dati delle titolarità dei soggetti giuridici, delle persone fisiche e delle partite speciali.
+
+```sql
+set search_path TO catasto_terreni;
+CREATE OR REPLACE VIEW titolarita_partite_speciali_union AS
+SELECT
+g.identificativo_immobile as identificativo_immobile,
+g.tipo_immobile as tipo_immobile,
+'soggetto giuridico' as tipo_soggetto,
+g.diritto as diritto,
+g.quota as quota,
+g.identificativo_soggetto_sogg as identificativo_soggetto,
+g.denominazione as denominazione,
+g.codice_amministrativo_sede as codice_amministrativo_sede,
+NULL as data_nascita,
+g.codice_fiscale as codice_fiscale,
+g.immo_sogg_diritto as idimm_idsog_diritto
+FROM catasto_terreni.titg_sogg_dist g
+UNION ALL
+SELECT
+p.identificativo_immobile as identificativo_immobile,
+p.tipo_immobile as tipo_immobile,
+'persona fisica' as tipo_soggetto,
+p.diritto as diritto,
+p.quota as quota,
+p.identificativo_soggetto_sogp as identificativo_soggetto,
+concat(p.cognome, ' ', p.nome) as denominazione,
+NULL as codice_amministrativo_sede,
+p.data_nascita as data_nascita,
+p.codice_fiscale as codice_fiscale,
+p.immo_sogp_diritto as idimm_idsog_diritto
+FROM catasto_terreni.titp_sogp_dist p
+UNION ALL
+SELECT
+s.identificativo_immobile as identificativo_immobile,
+s.tipo_immobile as tipo_immobile,
+'partita speciale' as tipo_soggetto,
+NULL as diritto,
+NULL as quota,
+NULL as identificativo_soggetto,
+s.descrizione_partita as denominazione,
+NULL as codice_amministrativo_sede,
+NULL as data_nascita,
+NULL as codice_fiscale,
+NULL as idimm_idsog_diritto
+FROM catasto_terreni.particelle_partite_speciali_terreni s
+WHERE s.descrizione_partita NOT IN ('particelle soppresse');
+```
+2) Creazione della relazione con la tabella .ter_1_clean
+
+```sql
+CREATE OR REPLACE VIEW titolarita_partite_speciali_union_ter AS
+SELECT row_number() OVER ()::integer AS gid,
+ter.identificativo_immobile AS identificativo_immobile_ter,
+ter.foglio,
+ter.numero,
+	CASE -- nuova colonna che permette di assegnare un codice univoco per foglio e particella. Servirà per il join con le geometrie del catasto
+	WHEN length(ter.foglio) = 1 THEN concat(ter.codice_amministrativo, '_000', ter.foglio, '_', ter.numero)
+    	ELSE
+		(
+			CASE
+		 	WHEN length(ter.foglio) = 2 THEN concat(ter.codice_amministrativo, '_00', ter.foglio, '_', ter.numero)
+		 	ELSE
+				(
+					CASE
+			 		WHEN length(ter.foglio) = 3 THEN concat(ter.codice_amministrativo, '_0', ter.foglio, '_', ter.numero)
+			 		ELSE
+			 			(
+							CASE
+							WHEN length(ter.foglio) = 4 THEN concat(ter.codice_amministrativo, '_', ter.foglio, '_', ter.numero)
+                					END
+						)
+					END
+				)
+			END
+		)
+	END AS com_fg_plla,
+ter.descrizione_qualita AS qualita,
+ter.classe,
+ter.ettari,
+ter.are,
+ter.centiare,
+t.*,
+concat(ter.identificativo_immobile, '_',t.identificativo_immobile,'_', t.identificativo_soggetto, '_', t.diritto) as univoco
+FROM ter_1_clean ter
+RIGHT JOIN titolarita_partite_speciali_union t ON ter.identificativo_immobile = t.identificativo_immobile;
+```
+
+---
+
 ## EXTRA
 ### Estrazione del geojson utilizzando ogr2ogr
 ```
