@@ -1045,7 +1045,12 @@ La somma del numero delle particelle soggetti fisici e del numero delle particel
 
 La gestione dei dati in QGIS può avvenire in maniera semplificata utilizzando le relazioni tra particelle/fabbricati e l'identificativo dell'immobile
 ### 8.1. Catasto fabbricati
-#### 8.1.1. Creazione della Vista univoca con i dati delle titolarità dei soggetti giuridici, delle persone fisiche e delle partite speciali.
+Per creare le relazioni occorrono le seguenti tabelle/viste:
+- la vista titg_sogg_dist  - paragrafo [4.3.1.2.]
+- la vista titp_sogp_dist  - paragrafo [4.3.1.2.]
+- la vista particelle_partite_speciali_terreni - paragrafo [4.3.1.2.]
+
+#### 8.1.1. Creazione della vista univoca con i dati delle titolarità dei soggetti giuridici, delle persone fisiche e delle partite speciali.
 
 ```sql
 set search_path TO catasto_terreni;
