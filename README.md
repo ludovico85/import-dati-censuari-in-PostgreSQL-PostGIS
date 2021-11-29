@@ -71,7 +71,7 @@ Per una gestione migliore della varie tabelle e viste che si andranno a creare �
 **Viste**
 
 
- ## Schema cxf_in
+### 2.3. Schema cxf_in
 
 **Tabelle**
 
@@ -420,10 +420,11 @@ CREATE OR REPLACE VIEW titg AS
 	SELECT * FROM tit
 	WHERE tipo_soggetto = 'G';
 ```
-### Creazione delle relazioni tra i tipi di file: soggetti persone fisiche (sogp) e titolarità persone fisiche (titp)
+### 4.3 Creazione delle relazioni
+#### 4.3.1 Creazione delle relazioni tra i tipi di file: soggetti persone fisiche (sogp) e titolarità persone fisiche (titp)
 Ogni immobile (particella o fabbricato) può appartenere a più titolari. Ogni titolare può avere più immobili. Per gestire questa relazione (molti a molti) è possibile utilizzare le funzioni di aggregazione. In questo specifico caso è la scelta è ricaduta sulla creazione di un json che contiene i diversi titolari appartenenti ad un dato immobile. Il vantaggio di utilizzare il json è che questo è interrogabile. La creazione della relazione viene fatta in tre step.
 
-#### 1) Creazione della vista titg_sogg_aggr. La relazione del tipo molti a molti viene esplicitata creando un campo univoco tra identificativo_immobile e idenitificativo_soggetto e tramite il join
+##### 4.3.1.1. Creazione della vista titg_sogg_aggr. La relazione del tipo molti a molti viene esplicitata creando un campo univoco tra identificativo_immobile e idenitificativo_soggetto e tramite il join
 
 ```sql
 CREATE OR REPLACE VIEW titp_sogp_aggr AS
@@ -444,13 +445,13 @@ SELECT
 	JOIN sogp p ON t.identificativo_soggetto = p.identificativo_soggetto
 ```
 
-#### 2) Creazione della vista titp_sogp_dist. Tramite il `SELECT DISTINCT ON` sul campo univoco, verranno selezionate solo le relazioni univoche eliminando eventuali records duplicati
+##### 4.3.1.2. Creazione della vista titp_sogp_dist. Tramite il `SELECT DISTINCT ON` sul campo univoco, verranno selezionate solo le relazioni univoche eliminando eventuali records duplicati
 
 ```sql
 CREATE OR REPLACE VIEW titp_sogp_dist AS
 SELECT DISTINCT ON (immo_sogp_diritto) * FROM titp_sogp_aggr
 ```
-#### 3) Creazione della vista aggregata. Viene creata la colonna soggetto che contiene in un'unica riga tutti i titolari dell'immobile
+##### 4.3.1.3. Creazione della vista aggregata. Viene creata la colonna soggetto che contiene in un'unica riga tutti i titolari dell'immobile
 
 ```sql
 CREATE OR REPLACE VIEW titp_sogp_json AS SELECT
@@ -473,10 +474,10 @@ FROM titp_sogp_dist
 GROUP by identificativo_immobile
 ```
 
-### Creazione delle relazioni tra i tipi di file: soggetti giuridici (sogg) e titolarità soggetti giuridici (titg)
+#### 4.3.2. Creazione delle relazioni tra i tipi di file: soggetti giuridici (sogg) e titolarità soggetti giuridici (titg)
 Ogni immobile (particella o fabbricato) può appartenere a più titolari e ogni titolare può avere più immobili. Per gestire questa relazione (molti a molti) è possibile utilizzare le funzioni di aggregazione. In questo specifico caso è la scelta è ricaduta sulla creazione di un json che contiene i diversi titolari appartenenti ad un dato immobile. Il vantaggio di utilizzare il json è che questo è interrogabile. La creazione della relazione viene fatta in tre step.
 
-#### 1) Creazione della vista titg_sogg_aggr. La relazione del tipo molti a molti viene esplicitata creando un campo univoco tra identificativo_immobile e idenitificativo_soggetto e tramite il join
+##### 4.3.2.1. Creazione della vista titg_sogg_aggr. La relazione del tipo molti a molti viene esplicitata creando un campo univoco tra identificativo_immobile e idenitificativo_soggetto e tramite il join
 
 ```sql
 CREATE OR REPLACE VIEW titg_sogg_aggr AS
@@ -495,12 +496,12 @@ SELECT
 	FROM titg t
 	JOIN sogg g ON t.identificativo_soggetto = g.identificativo_soggetto
 ```
-#### 2) Creazione della vista titg_sogg_dist. Tramite il `SELECT DISTINCT ON` sul campo univoco, verranno selezionate solo le relazioni univoche eliminando eventuali records duplicati
+##### 4.3.2.2. Creazione della vista titg_sogg_dist. Tramite il `SELECT DISTINCT ON` sul campo univoco, verranno selezionate solo le relazioni univoche eliminando eventuali records duplicati
 ```sql
 CREATE OR REPLACE VIEW titg_sogg_dist AS
 SELECT DISTINCT ON (immo_sogg_diritto) * FROM titg_sogg_aggr
 ```
-#### 3) Creazione della vista aggregata. Viene creata la colonna soggetto che contiene in un'unica riga tutti i titolari dell'immobile
+##### 4.3.2.3. Creazione della vista aggregata. Viene creata la colonna soggetto che contiene in un'unica riga tutti i titolari dell'immobile
 ```sql
 CREATE OR REPLACE VIEW titg_sogg_json AS SELECT
 	row_number() OVER ()::integer AS gid,
@@ -520,7 +521,7 @@ CREATE OR REPLACE VIEW titg_sogg_json AS SELECT
 FROM titg_sogg_dist
 GROUP by identificativo_immobile;
 ```
-### Creazione delle relazioni tra i tipi di file: soggetti_titolarità_persone_fisiche (titp_sogp_json) e immobili (ter_1_clean)
+#### 4.3.3. Creazione delle relazioni tra i tipi di file: soggetti_titolarità_persone_fisiche (titp_sogp_json) e immobili (ter_1_clean)
 ```sql
 CREATE OR REPLACE VIEW titp_sogp_ter_persone_fisiche AS
 SELECT row_number() OVER ()::integer AS gid,
@@ -557,7 +558,7 @@ j.soggetto
 FROM ter_1_clean ter
 JOIN titp_sogp_json j ON ter.identificativo_immobile = j.identificativo_immobile;
 ```
-### Creazione delle relazioni tra i tipi di file: soggetti_titolarità persone giuridiche (titg_sogg_json) e immobili (ter_1_clean)
+#### 4.3.4 Creazione delle relazioni tra i tipi di file: soggetti_titolarità persone giuridiche (titg_sogg_json) e immobili (ter_1_clean)
 ```sql
 CREATE OR REPLACE VIEW titg_sogg_ter_persone_giuridiche AS
 SELECT row_number() OVER ()::integer AS gid,
@@ -594,10 +595,10 @@ j.soggetto
 FROM ter_1_clean ter
 JOIN titg_sogg_json j ON ter.identificativo_immobile = j.identificativo_immobile;
 ```
-## Elaborazione dei dati nello schema catasto_fabbricati
+## 5. Elaborazione dei dati nello schema catasto_fabbricati
 
-### Importazione dei singoli file in PostgreSQL/PostGIS
-#### Importazione della tabella .FAB
+### 5.1. Importazione dei singoli file in PostgreSQL/PostGIS
+#### 5.1.1. Importazione della tabella .FAB
 Il file è costituito da 5 differenti tipi di records. Il fabbricato è distinto tramite il campo IDENTIFICATIVO IMMOBILE. La presenza di diversi tipi di record può creare delle righe duplicate per ogni fabbricato.
 - TIPO DI RECORD 1: contiene le informazioni descrittive dell'unità immobiliare
 - TIPO DI RECORD 2: contiene gli identificativi dell'unità immobiliare
@@ -609,7 +610,7 @@ Prima di importare il dato è necessario separare i tipi di record (1,2,3,4,5) i
 
 ATTENZIONE CARATTERI SPECIALI NON RICONOSCIUTI: °, SOSTITUIRE LA VIRGOLA CON IL PUNTO
 
-##### Tabella fab_1
+##### 5.1.1.1. Tabella fab_1
 ```sql
 SET search_path TO catasto_fabbricati;
 CREATE TABLE fab_1(
@@ -660,7 +661,7 @@ CREATE TABLE fab_1(
   descrizione_atto_conclusivo TEXT,
   flag_classamento TEXT);
 ```
-##### Tabella fab_2
+##### 5.1.1.2. Tabella fab_2
 
 ```sql
 CREATE TABLE fab_2(
@@ -678,7 +679,7 @@ CREATE TABLE fab_2(
   subalterno TEXT,
   edificialita TEXT);
 ```
-##### Tabella fab_3
+##### 5.1.1.3. Tabella fab_3
 
 ```sql
 CREATE TABLE fab_3(
@@ -697,7 +698,7 @@ CREATE TABLE fab_3(
   codice_strada TEXT);
 ```
 
-##### Tabella fab_4
+##### 5.1.1.4. Tabella fab_4
 
 ```sql
 CREATE TABLE fab_4(
@@ -714,7 +715,7 @@ CREATE TABLE fab_4(
   subalterno TEXT);
 ```
 
-##### Tabella fab_5
+##### 5.1.1.5. Tabella fab_5
 
 ```sql
 CREATE TABLE fab_5(
@@ -832,13 +833,13 @@ INSERT INTO codice_strada (codice_strada, denominazione) VALUES
 ### Creazione delle relazioni tra i tipi di file: soggetti_titolarità persone giuridiche (titg_sogg_json) e FABBRICATI (in costruzione).
 
 
-## Elaborazione dei dati nello schema cxf_in
+## 6. Elaborazione dei dati nello schema cxf_in
 Il plugin CXF_in importa i dati nel databse PostgreSQL/PostGIS nello schema cxf_in. Se si vuole, si possono copiare le tabelle in un altro schema (in questo modo consente di avere anche una copia di backup dei dati importati).
 **Nota bene: può succedere che l'importazione nel DB attraverso il plugin CXF_in generi degli errori a causa di geometrie non valide, interrompendo il processo. In tal caso occorre importare dapprima le geometrie nel db spatialite (in modo da consentire la georeferenzazione), caricarle in QGIS, ripararle (tramite lo strumento ripara geometrie) e importarle in PostgreSQL/PostGIS (utilizzando il tool Esporta in PostgreSQL).**
 
 ![Error](/img/Error_PostGIS.JPG)
 
-#### Copia delle tabelle in altro schema (OPZIONALE)
+### 6.1. Copia delle tabelle in altro schema (OPZIONALE)
 
 ```sql
 CREATE TABLE schema.acque AS (SELECT * FROM cxf_in.acque); -- sostituire il nome dello schema con quello desiderato (es. public).
@@ -853,9 +854,9 @@ CREATE TABLE schema.strade AS (SELECT * FROM cxf_in.strade);
 CREATE TABLE schema.testi AS (SELECT * FROM cxf_in.testi);
 ```
 
-### Creazione delle relazioni tra le geometrie particellari e i dati censuari (persone fisiche)
+### 6.2. Creazione delle relazioni tra le geometrie particellari e i dati censuari (persone fisiche)
 
-#### 1) Creazione dell'identificativo univoco di particella da utilizzare nel join con la vista tit_sog_ter_persone_fisiche
+#### 6.2.1. Creazione dell'identificativo univoco di particella da utilizzare nel join con la vista tit_sog_ter_persone_fisiche
 **N.B. Se le geometrie sono state importate attraverso il tool Esporta in PostgreSQL di QGIS, è necessario specificare, negli script seguenti, la tabella Particelle tra doppi apici ("Particelle") ed adattare i nomi dei campi**
 
 ```sql
@@ -868,7 +869,7 @@ UPDATE Particelle
 SET com_fg_plla = CONCAT(codice_comune, '_',fg,'_', mappale);
 ```
 
-#### 2) Join delle informazioni delle particelle e della titolarità relative ai soggetti fisici
+#### 6.2.2. Join delle informazioni delle particelle e della titolarità relative ai soggetti fisici
 
 ```sql
 CREATE OR REPLACE VIEW particellare_persone_fisiche AS -- Per questioni di performance sostituire con una Materialized View
@@ -913,9 +914,9 @@ FROM
 WITH DATA
 ```
 
-### Creazione delle relazioni tra le geometrie particellari e i dati censuari (persone giuridiche)
+### 6.3. Creazione delle relazioni tra le geometrie particellari e i dati censuari (persone giuridiche)
 
-#### 1) Join delle informazioni delle particelle e della titolarità relative ai soggetti giuridici
+#### 6.3.1. Join delle informazioni delle particelle e della titolarità relative ai soggetti giuridici
 
 ```sql
 CREATE OR REPLACE VIEW particellare_persone_giuridiche AS -- Per questioni di performance sostituire con una Materialized View
@@ -959,9 +960,9 @@ FROM
 	JOIN catasto_terreni.titg_sogg_ter_persone_giuridiche j ON p.com_fg_plla = j.com_fg_plla
 WITH DATA
 ```
-### Particelle senza titolarità
+### 6.4. Particelle senza titolarità
 La tabella partite_speciali_terreni contiene le particelle che non hanno titolarità. Può tornare utile creare un layer geometrico distinto per tale categoria di particelle.
-#### 1) Selezione e creazione della vista con la partite speciali terreni
+#### 6.4.1. Selezione e creazione della vista con la partite speciali terreni
 ```sql
 SET search_path TO catasto_terreni; -- IMPORTANTE: ABILITARE LO SCHEMA ESATTO, ALTRIMENTI LE TABELLE VERRANNO CREATE NELLO SCHEMA DI DEFAULT public;
 
@@ -993,7 +994,7 @@ FROM ter_1
 JOIN partite_speciali_terreni p ON ter_1.partita = p.codice_partita
 WHERE ter_1.partita IN ('1', '2', '3', '4', '5', '0')
 ```
-#### 2) Creazione delle geometrie
+#### 6.4.2. Creazione delle geometrie
 ```sql
 SET search_path TO cxf_in; -- IMPORTANTE: ABILITARE LO SCHEMA ESATTO, ALTRIMENTI LE TABELLE VERRANNO CREATE NELLO SCHEMA DI DEFAULT public;
 
@@ -1010,7 +1011,7 @@ FROM
 	JOIN catasto_terreni.particelle_partite_speciali_terreni j ON p.com_fg_plla = j.com_fg_plla
 WITH DATA
 ```
-### Estrazione delle particelle appartenenti ad un determinato soggetto.
+### 6.5. Estrazione delle particelle appartenenti ad un determinato soggetto.
 Si vogliono estrarre, per esempio, le particelle di un dato comune. Bisogna interrogare il campo soggetto (che è un json array):
 ```sql
 SELECT * FROM particellare_persone_giuridiche_mv WHERE (soggetto::jsonb @> '[{"denominazione": "VALORE"}]'); -- sotituire a VALORE il valore desiderato (es. COMUNE DI XXXX)
