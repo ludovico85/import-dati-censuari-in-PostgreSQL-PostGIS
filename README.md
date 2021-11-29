@@ -4,7 +4,7 @@
 
 Il repository contiene i passaggi per l'importazione dei dati catastali censuari in un database PostgreSQL/PostGIS e per il collegamento dei dati stessi alle geometrie catastali importate utilizzando il plugin per QGIS CXF_in https://github.com/saccon/CXF_in. Nella costruzione del database non sono state inserite esplicitamente delle relazioni tramite chiavi primarie/esterne a causa della non univocità dei valori presenti in alcuni tipi di file. Tuttavia le relazioni sono assicurate attarverso delle operazioni di join.
 
-## Breve descrizione dei dati catastali censuari
+## 1. Breve descrizione dei dati catastali censuari
 Le informazioni descritte in questa sezione derivano dal documento a cura dell'Agenzia dell'Entrate (DOC. ES-23-IS-05) liberamente consultabile all'indirizzo: https://wwwt.agenziaentrate.gov.it/mt/ServiziComuniIstituzioni/ES-23-IS-05_100909.pdf.
 
 Per maggiori dettagli sui servizi riservati ai comuni di può consultare: https://www.agenziaentrate.gov.it/portale/web/guest/schede/fabbricatiterreni/portale-per-i-comuni/servizi-portale-dei-comuni/estrazione-dati-catastali.
@@ -30,13 +30,13 @@ Ogni tipo di file è costituito da una tabella che può contenere diversi tipi d
 - .TIT contiene sia la chiave identificativo immobile che la chiave identificativo soggetto (oltre che la chiave identificativo titolarietà);
 
 
-## Struttura del database
+## 2. Struttura del database
 Per una gestione migliore della varie tabelle e viste che si andranno a creare è opportuno organizzare il database in schemi differenti:
 - catasto_terreni = conterrà il dataset relativo al catasto terreni
 - catasto_fabbricati = conterrà il dataset relativo al catasto fabbircati
 - cxf_in = schema creato in automatico dal plug in cxf_in che conterrà i dati geografici
 
-### Schema catasto_terreni
+### 2.1. Schema catasto_terreni
 
 **Tabelle**
 
@@ -64,7 +64,7 @@ Per una gestione migliore della varie tabelle e viste che si andranno a creare �
 - titp_sogp_ter_persone_giuridiche = vista ottenuta tramite tramite join tra titg_sogg_json e la vista ter_1_clean utilizzando il campo in comune identificativo_immobile (persone giuridiche).
 - particelle_partite_speciali_terreni = vista contenente le particelle senza titolairtà ottenuta tramite join tra la vista ter_1 e la tabella partite_speciali_terreni.
 
-## Schema catasto_fabbricati
+### 2.2. Schema catasto_fabbricati
 
 **Tabelle**
 
@@ -93,7 +93,7 @@ Per una gestione migliore della varie tabelle e viste che si andranno a creare �
 - particellare_partite_speciali_mv: vista ottenuta tramite join tra particelle_partite_speciali_terreni e il layer particelle utilizzando il campo in comune cm_fg_plla che identifica in modo univoco le particelle. **Contiene le geometrie.**
 
 
-## Impostazioni iniziali del database
+## 3. Impostazioni iniziali del database
 Il pimo step riguarda la creazione degli schemi catasto_terreni e catasto_fabbricati:
 
 ```sql
@@ -125,9 +125,9 @@ SET search_path TO schema; -- sostituire con il nome dello schema
 ```
 
 
-## Elaborazione dei dati nello schema catasto_terreni
-### Importazione dei dati censuari in PostgreSQL/PostGIS
-#### Importazione della tabella .TER
+## 4. Elaborazione dei dati nello schema catasto_terreni
+### 4.1. Importazione dei dati censuari in PostgreSQL/PostGIS
+#### 4.1.2. Importazione della tabella .TER
 Il file è costituito da 4 differenti tipi record. La particella è identificata attraverso il campo IDENTIFICATIVO IMMOBILE. La presenza di diversi tipi di record può creare delle righe duplicate per ogni particella.
 
 - TIPO RECORD 1: contiene le caratteristiche della particella. E' il record di interesse che verrà utilizzato per ricostruire il dato spaziale;
@@ -138,7 +138,7 @@ Il file è costituito da 4 differenti tipi record. La particella è identificata
 
 - TIPO RECORD 4: porzioni della particella.
 
-##### 1) Creazione della tabella .ter contenente tutti i campi (Per non creare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi)
+##### 4.1.1.1. Creazione della tabella .ter contenente tutti i campi (Per non creare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi)
 
 ```sql
 SET search_path TO catasto_terreni; -- IMPORTANTE: ABILITARE LO SCHEMA ESATTO, ALTRIMENTI LE TABELLE VERRANNO CREATE NELLO SCHEMA DI DEFAULT public
@@ -190,15 +190,15 @@ CREATE TABLE ter(
   descrizione_atto_conclusivo TEXT
 );
 ```
-##### 2) Importazione dei dati
+##### 4.1.1.2. Importazione dei dati
 Convertire il file .TER in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link:
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
 Per evitare errori è preferibile che i CSV abbiano l'header definito come da [esempio.csv](csv/TER.csv). Inoltre è necessario sostituire il separatore decimale virgola (',') con il punto ('.'). Utilizzare un qualsiasi editor di testo (Notepad++, ATOM, ecc.).
 
-#### Importazione della tabella .TIT
+#### 4.1.2. Importazione della tabella .TIT
 Il file contiene un unico tipo di record.
-##### 1) Creazione della tabella titolarità contenente tutti i campi (Per non creare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi).
+##### 4.1.2.1. Creazione della tabella titolarità contenente tutti i campi (Per non creare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi).
 
 ```sql
 CREATE TABLE tit
@@ -239,13 +239,13 @@ CREATE TABLE tit
 );
 ```
 
-##### 2) Importazione dei dati
+##### 4.1.2.2. Importazione dei dati
 Convertire il file .TIT in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link:
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
 Per evitare errori è preferibile che i CSV abbiano l'header definito come da [esempio.csv](csv/TIT.csv). Inoltre è necessario sostituire il separatore decimale virgola (',') con il punto ('.'). Utilizzare un qualsiasi editor di testo (Notepad++, ATOM, ecc.).
 
-#### Importazione della tabella .SOG
+#### 4.1.3. Importazione della tabella .SOG
 Il file è costituito da 2 differenti tipi record. Il soggetto è identificato attraverso il campo IDENTIFICATIVO SOGGETTO.
 
 - TIPO RECORD P: intestato a persona fisica;
@@ -254,7 +254,7 @@ Il file è costituito da 2 differenti tipi record. Il soggetto è identificato a
 
 Per una corretta gestione del file è necessario suddividere il file .SOG in due tabella, una per ogni record. Tale operazione si può effettuare in excel, calc, ecc.
 
-##### 1) Creazione della tabella per i soggetti fisici sogP, contenente tutti i campi (Per non crare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi).
+##### 4.1.3.1. Creazione della tabella per i soggetti fisici sogP, contenente tutti i campi (Per non crare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi).
 
 ```sql
 CREATE TABLE sogp
@@ -274,7 +274,7 @@ CREATE TABLE sogp
 );
 ```
 
-##### 2) Importazione dei dati
+##### 4.1.3.2. Importazione dei dati
 Convertire il file .SOG in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link:
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
@@ -282,7 +282,7 @@ Per evitare errori è preferibile che i CSV abbiano l'header definito come da [e
 
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
-##### 3) Creazione della tabella per i soggetti giuridici sogG, contenente tutti i campi (Per non creare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi).
+##### 4.1.3.3. Creazione della tabella per i soggetti giuridici sogG, contenente tutti i campi (Per non creare problemi durante l'importazione è stato scelto di importare alcuni campi numerici come testi).
 
 ```sql
 CREATE TABLE sogg
@@ -297,15 +297,15 @@ CREATE TABLE sogg
 	codice_fiscale TEXT
 );
 ```
-##### 4) Importazione dei dati
+##### 4.1.3.4. Importazione dei dati
 Convertire il file .SOG in .CSV utilizzando excel, calc, ecc.. Utilizzare la funzione di PgAdmin per l'importazione dei CSV come spiegato al seguente link:
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
 Per evitare errori è preferibile che i CSV abbiano l'header definito come da [esempio.csv](csv/SOGG.csv)
 
-#### Creazione Tabelle aggiuntive
+#### 4.1.4. Creazione Tabelle aggiuntive
 Le tabelle aggiuntive sono 3 e sono le qualità colturali, i codici di diritto e le partite speciali.
-##### Tabella delle qualità colturali
+##### 4.1.4.1. Tabella delle qualità colturali
 ```sql
 CREATE TABLE qualita
 (
@@ -315,7 +315,7 @@ CREATE TABLE qualita
 );
 ```
 Per inserire i valori utilizzare la funzione di PgAdmin per l'importazione dei CSV e utilizzare il file [qualita.csv](csv/qualita.csv) .
-##### Tabella dei codici di diritto
+##### 4.1.4.2. Tabella dei codici di diritto
 ```sql
 CREATE TABLE codici_diritto
 (
@@ -326,7 +326,7 @@ CREATE TABLE codici_diritto
 ```
 Per inserire i valori utilizzare la funzione di PgAdmin per l'importazione dei CSV e utilizzare il file [diritto.csv](csv/diritto.csv) .
 
-##### Tabella delle partite speciali
+##### 4.1.4.3 Tabella delle partite speciali
 ```sql
 CREATE TABLE partite_speciali_terreni
 (
@@ -344,10 +344,10 @@ VALUES
 ('5', 'strade pubbliche'),
 ('0', 'particelle soppresse')
 ```
-### Elaborazioni dei file
-#### Elaborazione della tabella .TER
+### 4.2. Elaborazioni dei file
+#### 4.2.1. Elaborazione della tabella .TER
 Le elaborazioni consistono nell'assegnazione della descrizione della qualità colturale contenuta nella tabella qualità e nella pulizia delle particelle partite speciali.
-##### 1) Aggiornamento della descrizione della qualità colturale
+##### 4.2.1.1. Aggiornamento della descrizione della qualità colturale
 ```sql
 ALTER TABLE ter
 ADD COLUMN descrizione_qualita TEXT;
@@ -358,7 +358,7 @@ FROM qualita as q
 WHERE t.qualita = q.id_qualita
 
 ```
-##### 2) Creazione della vista contenente solo il TIPO RECORD 1
+##### 4.2.1.2. Creazione della vista contenente solo il TIPO RECORD 1
 Il tipo di record contiene la seguente codifica:
 tipo di record | descrizione
 :------ | :------
@@ -372,7 +372,7 @@ CREATE OR REPLACE VIEW ter_1 AS
   SELECT * FROM ter
   WHERE tipo_record = '1';
 ```
-##### 2) Pulizia della vista ter_1
+##### 4.2.1.3. Pulizia della vista ter_1
 La Vista risultante dalla selezione del tipo_record = '1' può essere ulteriormente "pulita" eliminando quelle particelle che non hanno titolarità come le particelle soppresse, acque, strade. Le informazioni possono essere ricavate dal campo partita:
 
 partita | descrizione
@@ -394,9 +394,9 @@ CREATE OR REPLACE VIEW ter_1_clean AS
 
 N.B. se nella richiesta dei dati le partite speciali non sono state scaricate è possibile saltare il passaggio (bisogna tuttavia eliminare i subalterni). Nel file .PRM è possibile verificare la Tipologia di esportazione che può essere 1) Terreni completa ptaspec no oppure 2) Terreni completa ptaspec si. In entrambi casi il passaggio della pulizia della vista ter_1 non modifica il risultato. Si consiglia comunque di eseguire il passaggio.
 
-#### Elaborazione della tabella .TIT
+#### 4.2.2. Elaborazione della tabella .TIT
 Le elaborazioni consistono nell'assegnazione della descrizione dei codici di diritto contenuti nella tabella codici_diritto e nella creazione di due distinte tabelle, per le persone fisiche e per le persone giuridiche.
-##### 1) Aggiornamento della descrizione della qualità colturale
+##### 4.2.2.1 Aggiornamento della descrizione della qualità colturale
 ```sql
 ALTER TABLE tit
 ADD COLUMN descrizione_diritto TEXT;
@@ -407,14 +407,14 @@ FROM codici_diritto as d
 WHERE
 t.codice_diritto = d.codice_diritto
 ```
-##### 2) Creazione della vista titolarità per i soggetti fisici
+##### 4.2.2.2. Creazione della vista titolarità per i soggetti fisici
 
 ```sql
 CREATE OR REPLACE VIEW titp AS
 	SELECT * FROM tit
 	WHERE tipo_soggetto = 'P';
 ```
-##### 3) Creazione della vista titolarità per i soggetti giuridici
+##### 4.2.2.3. Creazione della vista titolarità per i soggetti giuridici
 ```sql
 CREATE OR REPLACE VIEW titg AS
 	SELECT * FROM tit
