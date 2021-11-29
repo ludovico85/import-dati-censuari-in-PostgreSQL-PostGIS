@@ -1041,7 +1041,7 @@ La somma del numero delle particelle soggetti fisici e del numero delle particel
 
 ## 8. Gestione dei dati in QGIS
 
-![qgis_image](https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/QGIS_logo%2C_2017.svg/1280px-QGIS_logo%2C_2017.svg.png)
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/QGIS_logo%2C_2017.svg/1280px-QGIS_logo%2C_2017.svg.png" alt="qgis" width="200"/>
 
 La gestione dei dati in QGIS può avvenire in maniera semplificata utilizzando le relazioni tra particelle/fabbricati e l'identificativo dell'immobile
 ### 8.1. Catasto fabbricati
