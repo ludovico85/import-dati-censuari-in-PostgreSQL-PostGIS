@@ -1022,7 +1022,7 @@ CREATE MATERIALIZED VIEW particellare_SOGGETTO_mv AS
 SELECT * FROM particellare_persone_giuridiche_mv WHERE (soggetto::jsonb @> '[{"denominazione": "VALORE"}]') -- sotituire a VALORE il valore desiderato (es. COMUNE DI XXXX)
 WITH DATA
 ```
-## Verifica delle particelle
+## 7. Verifica delle particelle
 Nel file titolarità sono riportati i codici univoci degli immobili e dei titolari. Per conoscere quante particelle sono riportare nel file titolarità:
 ```sql
 SELECT DISTINCT identificativo_immobile FROM tit WHERE tipo_immobile = 'T'
@@ -1039,11 +1039,13 @@ SELECT DISTINCT identificativo_immobile FROM tit WHERE tipo_immobile = 'T' AND t
 La somma del numero delle particelle soggetti fisici e del numero delle particelle soggetti giuridici non è sempre uguale al numero totale degli immobili poiché alcune particelle potrebbero essere in comune tra i due gruppi.
 ```
 
-## Gestione dei dati in QGIS
-### Catasto fabbricati
-La gestione dei dati in QGIS può avvenire in maniera semplificata utilizzando le relazioni tra le particelle e l'identificativo dell'immobile.
+## 8. Gestione dei dati in QGIS
 
-1) Creazione della Vista univoca con i dati delle titolarità dei soggetti giuridici, delle persone fisiche e delle partite speciali.
+![qgis_image](https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/QGIS_logo%2C_2017.svg/1280px-QGIS_logo%2C_2017.svg.png)
+
+La gestione dei dati in QGIS può avvenire in maniera semplificata utilizzando le relazioni tra particelle/fabbricati e l'identificativo dell'immobile
+### 8.1. Catasto fabbricati
+#### 8.1.1. Creazione della Vista univoca con i dati delle titolarità dei soggetti giuridici, delle persone fisiche e delle partite speciali.
 
 ```sql
 set search_path TO catasto_terreni;
