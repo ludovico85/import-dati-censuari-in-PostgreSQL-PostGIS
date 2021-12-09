@@ -1224,15 +1224,9 @@ field_17 AS piano_3,
 field_17 AS piano_4
 FROM fab_1
 LEFT JOIN categoria_catastale c ON fab_1.field_8 = c.codice_categoria
-WHERE fab_1.field_35 IS NULL OR fab_1.field_35 NOT IN ('A', 'C')
+WHERE fab_1.field_35 IS NULL OR fab_1.field_35 NOT IN ('A', 'C', 'R', '0')
 ```
 
-senza A-C partite speciali (fabbricati soppressi e non censibili)
-```sql
-SELECT *
-FROM fab_1
-WHERE fab_1.field_35 IS NULL OR fab_1.field_35 NOT IN ('A', 'C')
-```
 ```sql
 CREATE OR REPLACE VIEW fab_2_colnames AS
 SELECT
@@ -1328,9 +1322,8 @@ FROM fab_4
 ```
 
 ```sql
-SET search_path TO catasto_fabbricati;
 CREATE OR REPLACE VIEW tit_colnames AS
-SELECT
+SELECT DISTINCT ON (field_28)
 field_1 AS codice_amministrativo,
 field_2 AS sezione,
 field_3 AS identificativo_soggetto,
@@ -1360,8 +1353,20 @@ field_26 AS identificativo_mutazione_iniziale,
 field_27 AS identificativo_mutazione_finale,
 field_28 AS identificativo_titolarita,
 field_29 AS codice_causale_atto_generante,
-field_30 AS descrizione_atto_generante
+field_30 AS descrizione_atto_generante,
+d.descrizione AS descrizione_diritto
 FROM tit
+LEFT JOIN catasto_terreni.codici_diritto d ON tit.field_7 = d.codice_diritto
+```
+```sql
+CREATE OR REPLACE VIEW titp AS
+	SELECT * FROM tit_colnames
+	WHERE tipo_soggetto = 'P';
+```
+```sql
+  CREATE OR REPLACE VIEW titg AS
+	SELECT * FROM tit_colnames
+	WHERE tipo_soggetto = 'G';
 ```
 ```sql
 CREATE OR REPLACE VIEW sogp AS
@@ -1378,11 +1383,9 @@ field_9 AS codice_amministratvio_comune_nascita,
 field_10 AS codice_fiscale,
 field_11 AS indicazioni_supplementari
 FROM sog
-WHERE field_4 = 'p';
+WHERE field_4 = 'P';
 ```
-
 ```sql
-SET search_path TO catasto_terreni;
 CREATE OR REPLACE VIEW sogg AS
 SELECT
 field_1 AS codice_amministrativo,
@@ -1395,6 +1398,52 @@ field_7 AS codice_fiscale
 FROM sog
 WHERE field_4 = 'G';
 ```
+```sql
+CREATE OR REPLACE VIEW titp_sogp AS
+SELECT
+	t.identificativo_immobile,
+	t.tipo_immobile,
+	t.identificativo_soggetto identificativo_soggetto_tit,
+	t.descrizione_diritto as diritto,
+	concat(t.quota_numeratore_possesso, '/', t.quota_denominatore_possesso) AS quota,
+    p.identificativo_soggetto as identificativo_soggetto_sogp,
+    p.cognome,
+    p.nome,
+    p.data_nascita,
+    p.codice_fiscale,
+    concat(t.identificativo_immobile, '_', t.identificativo_soggetto, '_', t.descrizione_diritto, '_', concat(t.quota_numeratore_possesso, '/', t.quota_denominatore_possesso)) AS immo_sogp_diritto_quota
+	FROM titp t
+	JOIN sogp p ON t.identificativo_soggetto = p.identificativo_soggetto
+```
+```sql
+CREATE OR REPLACE VIEW titg_sogg AS
+SELECT
+	t.identificativo_immobile,
+	t.tipo_immobile,
+	t.identificativo_soggetto identificativo_soggetto_tit,
+	t.descrizione_diritto as diritto,
+	concat(t.quota_numeratore_possesso, '/', t.quota_denominatore_possesso) AS quota,
+    g.identificativo_soggetto as identificativo_soggetto_sogp,
+    g.denominazione,
+    g.codice_amministrativo_sede,
+    g.codice_fiscale,
+    concat(t.identificativo_immobile, '_', t.identificativo_soggetto, '_', t.descrizione_diritto, '_', concat(t.quota_numeratore_possesso, '/', t.quota_denominatore_possesso)) AS immo_sogg_diritto_quota
+	FROM titg t
+	JOIN sogg g ON t.identificativo_soggetto = g.identificativo_soggetto
+```
+
+
+select fab1.*,
+fab2.foglio,
+fab2.numero,
+fab2.denominatore,
+fab2.subalterno,
+fab2.edificialita,
+fab2.immobili_graffati
+from
+fab_1_colnames fab1
+JOIN fab_2_colnames fab2 ON fab1.identificativo_immobile = fab2.identificativo_immobile
+
 
 ### Importazione dei singoli file in PostgreSQL/PostGIS - .SOG (in costruzione).
 ### Importazione dei singoli file in PostgreSQL/PostGIS - .TIT (in costruzione).
